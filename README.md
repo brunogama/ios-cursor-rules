@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/brunogama/boxed/blob/main/assets/img/banner.png?raw=true](https://github.com/brunogama/my-opinionated-ios-cursor-rules/blob/922547e5fbd27421c509129ccdff6693d1057b7e/image.png" alt="Banner">
+  <img src="https://github.com/brunogama/my-opinionated-ios-cursor-rules/blob/922547e5fbd27421c509129ccdff6693d1057b7e/image.png" alt="Banner">
 </p>
 
 
