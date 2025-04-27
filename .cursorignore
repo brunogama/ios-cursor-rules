@@ -1,0 +1,22 @@
+# Ignore things that .gitignore possibly didn't cover. Cursor already ignores whatever .gitignore does but the below are things occasionally people don't ignore in git
+# CAUTION: this assumes there truly isn't anything in
+/bin
+/dist
+
+# Since we're ignoring all json in the codebase, we'll manually allow these as it's typical the model will be working on them
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.jsonc
+!jsconfig.json
+!deno.json
+!deno.jsonc
+!eslintrc.json
+!prettier.json
+
+
+# CAUTION: It's a good practice to ignore these, but occasionally can confuse the model in agent mode when it has to install/remove dependencies
+deno.lock
+package-lock.json
+bun.lockb
+pnpm-lock.yaml

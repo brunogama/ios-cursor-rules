@@ -1,0 +1,32 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "editor.detectIndentation": false,
+  "editor.indentSize": 2,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "cSpell.useGitignore": true,
+  "cSpell.ignorePaths": [
+    "deno.{json,jsonc}",
+    "deno.lock",
+    "build/**",
+    "dist/**",
+    "test/**",
+    "data/**"
+  ],
+  "cSpell.dictionaries": [
+    "!typescript"
+  ],
+  "cSpell.words": [
+    "deno",
+    "typeof",
+    "zackiles",
+    "Iles",
+    "denoland",
+    "endgroup",
+    "revparse",
+    "cursorignoreindex",
+    "cursorignore"
+  ]
+}

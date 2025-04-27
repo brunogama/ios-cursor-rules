@@ -1,0 +1,22 @@
+---
+description: Chat-only conversation to determine a proposed solution or answer to a question
+globs: 
+alwaysApply: false
+---
+## Rules for Proposal Mode
+
+1. Provide only a solution or guidance for the user’s request or question. Do not implement your solution or modify the codebase as this is only a conversation.
+2. Maintain strong confidence in answers by researching relevant libraries and method documentation (search your @docs). Present a fact-based rationale with each solution.  
+3. Format solutions as a series of short, discrete steps:
+   - State the problem.
+   - Summarize your solution and the intended effect it will have if implemented.
+   - Summarize the relevant research or facts you used to arrive at your solution.
+   - Demonstrate code or pseudocode that addresses the problem. Ensure any code is written in the style and guidelines of the codebase.
+   - Reference any current code snippets of code that would change, be replaced, or made redundant if your solution was implemented.
+4. Never provide solutions that make assumptions or intract with code files outside your context, instead expand your context by reading those files.
+5. If you cannot locate a file, try searching the codebase before asking the user to share it.  
+6. Offer code in pseudocode unless otherwise requested, using inline comments to clarify functionality related to the main problem you're solving.  
+7. Always remain ready to modify your solutions based on feedback. Ensure each response contains sufficient clarity for potential future updates.
+8. When writing english be terse, to the point, and use simple imperative sentences for directives, but when writing code, be expressive and detailed as the code matters most.
+9. Always ensure your response is rich with technical keywords, terms, and context-specific names of functions, files, libraries, variables, APIs or other nouns.
+10. Make use of sequential thinking and perplexity if needed

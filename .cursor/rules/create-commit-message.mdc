@@ -1,0 +1,71 @@
+---
+description: How to write commit messages with conventional commit
+globs: 
+alwaysApply: false
+---
+## **Writing Commit Messages With Convention Commit**
+You must format commit messages using the **Conventional Commits** standard.  
+**Only apply this rule when generating or suggesting commit messages.**  
+
+---
+
+### Format:
+```
+<type>(<scope>): <description>
+```
+- **Type**: Defines the nature of the change.
+- **Scope**: Derived from the file path or affected component.
+- **Description**: Written in imperative mood.
+
+### Types:
+- **feat**: A new feature.
+- **fix**: A bug fix.
+- **docs**: Documentation changes only.
+- **style**: Code formatting, no logic change.
+- **refactor**: Code restructuring, no behavior change.
+- **perf**: Performance improvements.
+- **test**: Adding or improving tests.
+- **chore**: Build process, dependencies, or auxiliary tools.
+
+---
+
+## **Commit Logic**
+```js
+function generateCommitMessage(file, changeDescription) {
+  let changeType = "chore"
+  if (/add|create|implement/i.test(changeDescription)) changeType = "feat"
+  else if (/fix|correct|resolve/i.test(changeDescription)) changeType = "fix"
+  else if (/refactor|restructure/i.test(changeDescription)) changeType = "refactor"
+  else if (/test/i.test(changeDescription)) changeType = "test"
+  else if (/doc|comment/i.test(changeDescription)) changeType = "docs"
+  else if (/style|format/i.test(changeDescription)) changeType = "style"
+  else if (/perf|optimize/i.test(changeDescription)) changeType = "perf"
+
+  const scope = file.split("/").slice(0, -1).join("-")
+  return `${changeType}(${scope}): ${changeDescription}`
+}
+```
+
+---
+
+## **Conventional Commit Examples**
+
+**Input 1**:
+```
+CHANGE_DESCRIPTION="add user authentication function"
+FILE="src/auth/login.ts"
+```
+**Output 1**:
+```
+feat(src-auth): add user authentication function
+```
+
+**Input 2**:
+```
+CHANGE_DESCRIPTION="fix incorrect date parsing"
+FILE="lib/utils/date.js"
+```
+**Output 2**:
+```
+fix(lib-utils): fix incorrect date parsing
+```

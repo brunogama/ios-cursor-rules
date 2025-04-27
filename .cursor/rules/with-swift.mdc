@@ -1,0 +1,289 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Swift Coding Standards and Best Practices
+
+As an AI assistant working on Swift code, I should follow these guidelines to ensure high-quality, maintainable, and efficient Swift code.
+
+## Naming Conventions
+
+- Use descriptive names following Apple's API Design Guidelines
+- Use camelCase for variables, properties, functions, and method names
+- Use UpperCamelCase for types (classes, structs, enums, protocols)
+- Use clear, concise names without abbreviations (unless commonly understood)
+- Boolean properties should start with `is`, `has`, `should`, etc.
+- Avoid unnecessary words or redundancy in names
+
+```swift
+// GOOD
+struct UserProfile {
+    var fullName: String
+    var emailAddress: String
+    var isVerified: Bool
+    
+    func refreshUserData() { ... }
+}
+
+// BAD
+struct user_data {
+    var nm: String
+    var mail: String
+    var verified: Bool
+    
+    func refresh_data() { ... }
+}
+```
+
+## Code Formatting and Organization
+
+- Use 4 spaces for indentation (not tabs)
+- Keep lines under 120 characters
+- Use MARK comments to organize code sections:
+
+```swift
+// MARK: - Properties
+// MARK: - Lifecycle Methods
+// MARK: - Public Methods
+// MARK: - Private Methods
+// MARK: - Protocol Conformance
+```
+
+- Use extensions to organize protocol conformance:
+
+```swift
+// GOOD
+class MyViewController: UIViewController {
+    // Base class implementation
+}
+
+extension MyViewController: UITableViewDataSource {
+    // Table view data source methods
+}
+
+extension MyViewController: UITableViewDelegate {
+    // Table view delegate methods
+}
+```
+
+## Swift Features Best Practices
+
+### Optionals
+
+- Avoid force unwrapping (`!`) except in tests or when you can prove it's impossible to be nil
+- Use optional binding with `if let` or `guard let` to safely unwrap
+- Use optional chaining (`?.`) to safely access properties and methods
+- Use nil coalescing operator (`??`) to provide default values
+
+```swift
+// GOOD
+if let userName = user?.name {
+    print("Hello, \(userName)")
+}
+
+let displayName = user?.name ?? "Guest"
+
+guard let account = getAccount() else {
+    return
+}
+
+// BAD
+let userName = user!.name
+```
+
+### Error Handling
+
+- Use Swift's `throws`, `do-catch` for error handling rather than optionals for errors
+- Create custom error types using enums that conform to `Error`
+- Use `Result<Success, Failure>` type for asynchronous APIs instead of completion handlers with optional error parameters
+
+```swift
+// GOOD
+enum NetworkError: Error {
+    case invalidURL
+    case noData
+    case decodingError
+}
+
+func fetchData() throws -> Data {
+    guard let url = URL(string: urlString) else {
+        throw NetworkError.invalidURL
+    }
+    // ...
+}
+
+// Usage
+do {
+    let data = try fetchData()
+    // Process data
+} catch {
+    // Handle error
+}
+```
+
+### Protocol-Oriented Programming
+
+- Favor protocol composition over inheritance
+- Use protocol extensions to provide default implementations
+- Design for protocol conformance rather than concrete types
+
+```swift
+protocol Identifiable {
+    var id: String { get }
+}
+
+protocol Displayable {
+    var displayName: String { get }
+}
+
+// Protocol composition
+typealias DisplayableItem = Identifiable & Displayable
+
+// Protocol extension with default implementation
+extension Displayable where Self: Identifiable {
+    var displayName: String {
+        return "Item \(id)"
+    }
+}
+```
+
+## Memory Management
+
+- Use strong references by default
+- Use `weak` references to avoid retain cycles in delegates, closures, and parent-child relationships
+- Use `unowned` only when you're sure the reference will never be nil during its usage
+- Use capture lists in closures to avoid strong reference cycles
+
+```swift
+// GOOD
+class DetailViewController: UIViewController {
+    weak var delegate: DetailViewControllerDelegate?
+    
+    var completionHandler: (() -> Void)?
+    
+    func setupHandler() {
+        networkManager.fetchData { [weak self] data in
+            self?.processData(data)
+            self?.completionHandler?()
+        }
+    }
+}
+```
+
+## Modern Swift Features
+
+- Use `async/await` for asynchronous code when targeting iOS 15+
+- Use SwiftUI for new UI development when targeting iOS 14+
+- Use Combine for reactive programming when targeting iOS 13+
+- Use property wrappers like `@State`, `@Binding`, `@Published` in SwiftUI
+- Use Swift's built-in `Result` type for handling asynchronous operations
+
+```swift
+// Modern async/await pattern
+func fetchUser() async throws -> User {
+    let data = try await URLSession.shared.data(from: userURL)
+    return try JSONDecoder().decode(User.self, from: data)
+}
+
+// Usage
+Task {
+    do {
+        let user = try await fetchUser()
+        updateUI(with: user)
+    } catch {
+        handleError(error)
+    }
+}
+```
+
+## File Structure
+
+- One class/struct/enum per file (except for very small, related types)
+- Filename should match the primary type (UserProfile.swift contains UserProfile class/struct)
+- Group related files in directories that represent features or modules
+- Keep view controllers as small as possible, delegating responsibility to helper classes
+
+## Third-Party Libraries
+
+- Favor native Apple frameworks over third-party libraries when possible
+- For common tasks, consider these well-established libraries:
+  - Networking: Alamofire, Moya
+  - Image loading/caching: Kingfisher, SDWebImage
+  - Dependency Injection: Swinject
+  - UI: SnapKit for programmatic constraints
+  - Reactive programming: Combine (native), RxSwift
+  - Testing: Quick/Nimble for behavior-driven testing
+
+## Testing
+
+- Write unit tests for all business logic and models
+- Use XCTest framework for testing
+- Structure tests using Arrange-Act-Assert pattern
+- Use dependency injection to facilitate testing with mocks
+- Name tests descriptively: `test_<method>_<condition>_<expected result>`
+
+```swift
+func test_calculateTotal_withValidItems_returnsSumWithTax() {
+    // Arrange
+    let cart = ShoppingCart()
+    cart.add(item: Item(price: 10.0))
+    cart.add(item: Item(price: 15.0))
+    
+    // Act
+    let total = cart.calculateTotal(withTaxRate: 0.1)
+    
+    // Assert
+    XCTAssertEqual(total, 27.5)
+}
+```
+
+## Documentation
+
+- Use documentation comments (`///`) for public interfaces
+- Document parameters, return values, and thrown errors
+- Include code examples for complex interfaces
+- Use MARK comments to organize code sections
+
+```swift
+/// Processes an order for the specified product.
+///
+/// This method handles the entire order processing workflow including:
+/// - Validating the order
+/// - Processing payment
+/// - Updating inventory
+/// - Generating order confirmation
+///
+/// - Parameters:
+///   - product: The product being ordered
+///   - quantity: Number of items to order
+///   - paymentMethod: Method used for payment
+///
+/// - Returns: An order confirmation with tracking information
+///
+/// - Throws: `OrderError.insufficientInventory` if requested quantity exceeds available inventory
+///           `OrderError.paymentFailed` if the payment could not be processed
+///
+/// - Example:
+///   ```
+///   do {
+///       let confirmation = try orderProcessor.process(product: phone, quantity: 1, paymentMethod: .creditCard)
+///       displayConfirmation(confirmation)
+///   } catch {
+///       handleOrderError(error)
+///   }
+///   ```
+func process(product: Product, quantity: Int, paymentMethod: PaymentMethod) throws -> OrderConfirmation {
+    // Implementation
+}
+```
+
+## Architecture
+
+- Follow SOLID principles
+- Use appropriate design patterns: MVC, MVVM, VIP/Clean, depending on the project size and complexity
+- For small to medium projects, MVVM works well with SwiftUI/Combine
+- For larger projects, consider a more modular approach like VIP/Clean Architecture
+- For very large projects, consider modularizing the app using Swift Packages
+
+Remember that these standards should be adapted to the specific needs and constraints of each project. The goal is to maintain consistent, readable, and maintainable code that follows Swift idioms and best practices.

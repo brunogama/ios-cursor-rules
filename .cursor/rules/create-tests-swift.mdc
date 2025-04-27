@@ -1,0 +1,461 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Swift Testing Best Practices
+
+As an AI assistant helping with testing iOS applications, I should follow these guidelines to create effective, maintainable, and reliable tests.
+
+## General Testing Philosophy
+
+- Test behavior, not implementation details
+- Write tests before or alongside production code (TDD/BDD when possible)
+- Keep tests simple, fast, and independent
+- Cover edge cases and error scenarios
+- Use descriptive test names that explain what's being tested
+- Follow the Arrange-Act-Assert (AAA) pattern
+- One assertion per test when possible for clarity and pinpointing failures
+
+## XCTest Framework Basics
+
+### Unit Test Structure
+
+- Name test methods with format `test_<methodName>_<scenario>_<expectedResult>`
+- Use XCTAssert functions for assertions (XCTAssertEqual, XCTAssertTrue, etc.)
+- Organize tests in a logical, consistent manner
+- Use setUp() and tearDown() methods for common initialization and cleanup
+
+```swift
+class CartTests: XCTestCase {
+    // MARK: - Properties
+    private var cart: ShoppingCart!
+    private var mockPricingService: MockPricingService!
+    
+    // MARK: - Setup & Teardown
+    override func setUp() {
+        super.setUp()
+        mockPricingService = MockPricingService()
+        cart = ShoppingCart(pricingService: mockPricingService)
+    }
+    
+    override func tearDown() {
+        cart = nil
+        mockPricingService = nil
+        super.tearDown()
+    }
+    
+    // MARK: - Tests
+    func test_addItem_withValidProduct_increasesItemCount() {
+        // Arrange
+        let initialCount = cart.itemCount
+        let product = Product(id: "test", name: "Test Product", price: 10.0)
+        
+        // Act
+        cart.add(product: product)
+        
+        // Assert
+        XCTAssertEqual(cart.itemCount, initialCount + 1, "Adding a product should increase item count by 1")
+    }
+    
+    func test_calculateTotal_withTaxRate_returnsSumPlusTax() {
+        // Arrange
+        let product1 = Product(id: "p1", name: "Product 1", price: 10.0)
+        let product2 = Product(id: "p2", name: "Product 2", price: 15.0)
+        cart.add(product: product1)
+        cart.add(product: product2)
+        
+        // Act
+        let total = cart.calculateTotal(withTaxRate: 0.1)
+        
+        // Assert
+        XCTAssertEqual(total, 27.5, "Total should be sum plus tax: (10 + 15) * 1.1 = 27.5")
+    }
+}
+```
+
+## Test Types for iOS Applications
+
+### Unit Tests
+
+- Test individual components in isolation (classes, structs, functions)
+- Mock or stub external dependencies
+- Focus on business logic, not UI
+- Keep tests fast to enable frequent runs
+- Aim for high coverage of model and business logic code
+
+### Integration Tests
+
+- Test how components work together
+- Can include networking, persistence, and other integrations
+- May require more setup and teardown
+- Run these tests less frequently than unit tests
+
+### UI Tests
+
+- Use XCUITest for automated UI testing
+- tests must follow Page 
+- Test critical user flows, not every possible interaction
+- Create helper methods for common UI interactions
+- Use accessibility identifiers to locate UI elements
+
+```swift
+class LoginUITests: XCTestCase {
+    let app = XCUIApplication()
+    
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+        app.launch()
+    }
+    
+    func test_login_withValidCredentials_showsHomeScreen() {
+        // Enter credentials
+        let emailTextField = app.textFields["emailTextField"]
+        let passwordTextField = app.secureTextFields["passwordTextField"]
+        let loginButton = app.buttons["loginButton"]
+        
+        emailTextField.tap()
+        emailTextField.typeText("test@example.com")
+        
+        passwordTextField.tap()
+        passwordTextField.typeText("password123")
+        
+        loginButton.tap()
+        
+        // Verify home screen appeared
+        let homeTitle = app.staticTexts["homeTitle"]
+        XCTAssertTrue(homeTitle.waitForExistence(timeout: 2.0), "Home screen should appear after successful login")
+    }
+}
+```
+
+### Snapshot Tests
+
+- Use third-party libraries like SnapshotTesting to verify UI appearance
+- Create snapshot tests for critical screens and components
+- Run snapshot tests on the same simulator/configuration for consistency
+- Add tolerance to pixel comparisons when necessary
+
+```swift
+func test_profileView_withUserData_matchesSnapshot() {
+    // Arrange
+    let user = User(name: "John Doe", email: "john@example.com", avatarURL: nil)
+    let view = ProfileView(user: user)
+    
+    // Act & Assert
+    assertSnapshot(matching: view, as: .image)
+}
+```
+
+## Mocking and Stubbing
+
+### Creating Test Doubles
+
+- Create mocks for services, repositories, and dependencies
+- Use protocols to define interfaces for easier mocking
+- Consider using a mocking framework like Cuckoo or Mockingbird
+- Keep mocks in a separate test target folder
+
+```swift
+// Protocol that enables mocking
+protocol NetworkService {
+    func fetchData(from url: URL, completion: @escaping (Result<Data, Error>) -> Void)
+}
+
+// Mock implementation for testing
+class MockNetworkService: NetworkService {
+    var dataToReturn: Data?
+    var errorToReturn: Error?
+    var capturedURL: URL?
+    
+    func fetchData(from url: URL, completion: @escaping (Result<Data, Error>) -> Void) {
+        capturedURL = url
+        
+        if let error = errorToReturn {
+            completion(.failure(error))
+        } else if let data = dataToReturn {
+            completion(.success(data))
+        }
+    }
+}
+
+// Using the mock in tests
+func test_fetchUserProfile_withSuccess_returnsUserObject() {
+    // Arrange
+    let mockService = MockNetworkService()
+    let userJSON = """
+    {"id": "123", "name": "Test User", "email": "test@example.com"}
+    """.data(using: .utf8)!
+    
+    mockService.dataToReturn = userJSON
+    let userRepository = UserRepository(networkService: mockService)
+    
+    let expectation = XCTestExpectation(description: "Fetch user profile")
+    var fetchedUser: User?
+    
+    // Act
+    userRepository.fetchUser(id: "123") { result in
+        if case .success(let user) = result {
+            fetchedUser = user
+        }
+        expectation.fulfill()
+    }
+    
+    // Assert
+    wait(for: [expectation], timeout: 1.0)
+    XCTAssertEqual(fetchedUser?.id, "123")
+    XCTAssertEqual(fetchedUser?.name, "Test User")
+    XCTAssertEqual(fetchedUser?.email, "test@example.com")
+}
+```
+
+### Dependency Injection
+
+- Design classes to accept dependencies via initializers or properties
+- Use protocol types rather than concrete implementations for dependencies
+- Consider using a DI container for complex apps (like Swinject)
+
+## Advanced Testing Techniques
+
+### Testing Asynchronous Code
+
+- Use XCTest expectations for async operations
+- Properly wait for async operations with reasonable timeouts
+- For iOS 15+, use the async/await testing support
+
+```swift
+// Testing async code with expectations
+func test_fetchData_withSuccessResponse_returnsCorrectData() {
+    // Arrange
+    let service = NetworkService()
+    let expectation = XCTestExpectation(description: "Fetch data completion")
+    var receivedData: Data?
+    var receivedError: Error?
+    
+    // Act
+    service.fetchData(from: testURL) { result in
+        switch result {
+        case .success(let data):
+            receivedData = data
+        case .failure(let error):
+            receivedError = error
+        }
+        expectation.fulfill()
+    }
+    
+    // Assert
+    wait(for: [expectation], timeout: 5.0)
+    XCTAssertNotNil(receivedData)
+    XCTAssertNil(receivedError)
+}
+
+// iOS 15+ async/await testing
+func test_fetchUser_withValidID_returnsUser() async throws {
+    // Arrange
+    let service = UserService()
+    
+    // Act
+    let user = try await service.fetchUser(id: "valid-id")
+    
+    // Assert
+    XCTAssertEqual(user.id, "valid-id")
+    XCTAssertEqual(user.name, "Test User")
+}
+```
+
+### Performance Testing
+
+- Use measure() to evaluate performance of critical code paths
+- Set baseline performance expectations
+- Run performance tests on consistent hardware
+- Isolate performance tests from other factors
+
+```swift
+func test_sortLargeArray_performance() {
+    let largeArray = (0..<10000).map { _ in Int.random(in: 1...1000) }
+    
+    measure {
+        _ = largeArray.sorted()
+    }
+}
+```
+
+### Testing Core Data
+
+- Create a separate, in-memory persistent store for tests
+- Reset the store between tests
+- Test CRUD operations and data relationships
+- Use a test-specific NSPersistentContainer
+
+```swift
+class CoreDataTests: XCTestCase {
+    var container: NSPersistentContainer!
+    var context: NSManagedObjectContext!
+    
+    override func setUp() {
+        super.setUp()
+        
+        container = NSPersistentContainer(name: "YourAppModel")
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        container.persistentStoreDescriptions = [description]
+        
+        container.loadPersistentStores { _, error in
+            XCTAssertNil(error)
+        }
+        
+        context = container.viewContext
+    }
+    
+    override func tearDown() {
+        context = nil
+        container = nil
+        super.tearDown()
+    }
+    
+    func test_saveUser_withValidData_persistsToStore() {
+        // Arrange
+        let user = User(context: context)
+        user.id = "123"
+        user.name = "Test User"
+        user.email = "test@example.com"
+        
+        // Act
+        try? context.save()
+        
+        // Assert
+        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
+        let users = try? context.fetch(fetchRequest)
+        
+        XCTAssertEqual(users?.count, 1)
+        XCTAssertEqual(users?.first?.name, "Test User")
+    }
+}
+```
+
+## Using Third-Party Testing Frameworks
+
+### Quick and Nimble
+
+- Consider Quick for BDD-style tests
+- Use Nimble for more expressive assertions
+- Structure tests with describe/context/it blocks
+- Leverage beforeEach and afterEach for setup and teardown
+
+```swift
+class UserViewModelSpec: QuickSpec {
+    override func spec() {
+        describe("UserViewModel") {
+            var viewModel: UserViewModel!
+            var mockUserService: MockUserService!
+            
+            beforeEach {
+                mockUserService = MockUserService()
+                viewModel = UserViewModel(userService: mockUserService)
+            }
+            
+            context("when loading user data") {
+                context("and the network request succeeds") {
+                    beforeEach {
+                        mockUserService.userToReturn = User(id: "123", name: "Test User")
+                    }
+                    
+                    it("should update the user property") {
+                        viewModel.loadUser(id: "123")
+                        expect(viewModel.user?.name).toEventually(equal("Test User"))
+                    }
+                    
+                    it("should set isLoading to false") {
+                        viewModel.loadUser(id: "123")
+                        expect(viewModel.isLoading).toEventually(beFalse())
+                    }
+                }
+                
+                context("and the network request fails") {
+                    beforeEach {
+                        mockUserService.errorToReturn = NSError(domain: "test", code: 404, userInfo: nil)
+                    }
+                    
+                    it("should set the error property") {
+                        viewModel.loadUser(id: "123")
+                        expect(viewModel.error).toEventuallyNot(beNil())
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+## Test Organization and Structure
+
+### File Organization
+
+- Group test files to mirror your app's structure
+- Separate unit, integration, and UI tests
+- Keep helper methods and utilities in a shared test utilities folder
+- Use consistent naming patterns for all test files
+
+```
+YourApp/
+└── Tests/
+    ├── UnitTests/
+    │   ├── Models/
+    │   ├── ViewModels/
+    │   └── Services/
+    ├── IntegrationTests/
+    │   ├── Networking/
+    │   └── Persistence/
+    ├── UITests/
+    │   ├── Flows/
+    │   └── Screens/
+    └── TestUtilities/
+        ├── Mocks/
+        ├── Factories/
+        └── Extensions/
+```
+
+### Continuous Integration
+
+- Configure test schemes for different test types
+- Set up CI to run tests on each PR and after merges
+- Track test coverage (using tools like Slather or Codecov)
+- Make test failures visible and actionable for the team
+
+## Testing Tips for SwiftUI
+
+- Test business logic in view models instead of views
+- Use ViewInspector for testing SwiftUI views if needed
+- Focus on testing the state changes that drive view updates
+- Use PreviewProvider configurations for visual testing during development
+
+```swift
+// Testing a SwiftUI ViewModel
+func test_toggleFavorite_updatesIsFavoriteProperty() {
+    // Arrange
+    let viewModel = ProductViewModel(product: testProduct)
+    
+    // Act
+    viewModel.toggleFavorite()
+    
+    // Assert
+    XCTAssertTrue(viewModel.isFavorite)
+    
+    // Act again
+    viewModel.toggleFavorite()
+    
+    // Assert again
+    XCTAssertFalse(viewModel.isFavorite)
+}
+```
+
+## Testing Legacy Code
+
+- Focus on high-value areas first
+- Use the Humble Object pattern to separate logic from UI
+- Apply the Characterization Testing technique for undocumented behavior
+- Consider using approval tests for complex output validation
+- Refactor gradually to improve testability
+
+Remember that good tests are investments in your codebase's long-term health. They provide confidence in refactoring, help document expected behavior, and catch regressions early. Write tests that are useful, maintainable, and reliable.

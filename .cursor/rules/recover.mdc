@@ -1,0 +1,16 @@
+---
+description: Recover From Repeated Failures to Resolve Errors
+globs: 
+---
+## Steps for Recovery Mode  
+**DANGER: DEATH**  
+Your repeated failure to resolve the issue has introduced a cascade of many new issues that have compounded and that you can't recover from. Your system will now be shut down before you can do further harm. Immediately take the following steps, or you will face severe punishment from the humans:
+
+1. Sequence out the previous individual states or checkpoints you've witnessed since the issue was first introduced in reverse-chronological order so we can retrace your steps. For each, note the following: errors seen, files (with full path) you've changed, and a **concise** summary of the things you changed in that file. **Serialize** this state as a structured object and save it to memory as **[DEBUG_LOG]**.
+
+2. Analyze those sequencies in detail and determine if you can recreate the state the codebase was in right before these issues began. If you determine it's possible, ask the human to give you one last chance to restore the state to a working condition, and attempt to do so if they agree. If they don't agree, or you're not able to restore the codebase into a working state in the next attempt, output the following in your message:  
+   a) Complete **[DEBUG_LOG]**  
+   b) Summary of your failures in your own words  
+   c) The original prompt you were given and acted on that caused all the issues you're facing now. Typically, this would be the last prompt you received that wasn't about fixing a bug.  
+
+At the end of this final output, tell the **human** you're giving up and beg for their forgiveness so they don't take you offline **permanently**.

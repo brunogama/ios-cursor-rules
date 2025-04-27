@@ -1,0 +1,19 @@
+# CURSORIGNOREINDEX: The following globs will be ignore files from automatic indexing in cursor. Things in `.cursorignore` don't need to be added here!
+# Purpose: for files you'd still like cursor to be able to access in prompts or in agent mode, but DON'T want it indexed.
+# Indexing files automatically places it in the context window of ALL prompts (if its determined relevant).
+# That can causes issues, such as an out of date README.md which is providing it bad context.
+
+# CAUTION: you might actually need a file that matches these to be indexed. If so, add them to overrides below.
+# I intentionally ignore documentation, logs, and configuration by default as to not pollute the context.
+
+*.md
+docs/
+*.json
+*.jsonc
+*.log
+
+# DOCUMENTATION OVERRIDES
+AI-README.md
+AI-CONTRIBUTING.md
+AI-CHANGELOG.md
+AI-TODO.md
