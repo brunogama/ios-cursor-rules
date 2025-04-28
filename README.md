@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/brunogama/my-opinionated-ios-cursor-rules/blob/922547e5fbd27421c509129ccdff6693d1057b7e/image.png" alt="Banner">
+</p>
+
 # Cursor Swift Rules
 
 A comprehensive collection of Cursor rules specifically designed for Swift and iOS development. These rules enhance your development experience by providing intelligent assistance for common iOS development tasks, testing, security, and best practices.
