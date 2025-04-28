@@ -3,310 +3,161 @@ description:
 globs: 
 alwaysApply: false
 ---
-# Swift Testing Best Practices Development Workflow System
+# Swift Testing Guidelines
 
-Rule for managing the complete development lifecycle including task tracking, testing, and version control.
+Rule for creating effective Swift tests using XCTest and other iOS testing frameworks.
 
 <rule>
-name: development_workflow_system
+name: create_tests_swift
 filters:
-  # Task management filters
-  - type: event
-    pattern: "task_start"
-  - type: event
-    pattern: "task_complete"
-  - type: command
-    pattern: "task"
-  - type: event
-    pattern: "user_request"
-  - type: event 
-    pattern: "implementation_complete"
-  
-  # Testing filters
-  - type: event
-    pattern: "implementation_start"
+  - type: file_change
+    pattern: "*.swift"
+  - type: file_change
+    pattern: "*Tests/*.swift"
+  - type: file_change
+    pattern: "*UITests/*.swift"
   - type: command
     pattern: "test"
-  - type: file_change
-    pattern: "src/*"
-  - type: file_change
-    pattern: "tests/*"
-  - type: event
-    pattern: "test_failure"
-  
-  # Git commit filters
-  - type: event
-    pattern: "build_success"
-  - type: event
-    pattern: "test_success"
-  - type: event
-    pattern: "file_save"
-  - type: file_change
-    pattern: "*"
-  
-  # README management filters
-  - type: command
-    pattern: "readme"
-  - type: file_change
-    pattern: "README.md"
 
 actions:
-  #
-  # SECTION 1: TASK MANAGEMENT
-  #
-  
-  - For each function created during the development cycle one test should be implemented together to assert the code generated AND IMPLEMENTED PASSING.
-     - For each specification, create appropriate test files:
-        - Create test files in the proper location and format
-        - Link tests to the specification requirements
-        - Add placeholder tests for each requirement
-        - Include references to the specs and task
-This ensures tests are created before implementation, supporting 
-test-driven development.
-  
-  #
-  # SECTION 2: TESTING MANAGEMENT
-  #
-
+  - type: react
+    conditions:
+      - pattern: "create test|test create"
+    action: |
+      # Create a new test file
       
-      2. Process test results:
-         - If tests pass, update active task to reflect passing tests
-         - If tests fail, create detailed failure report
-         - Trigger appropriate success/failure events
+      I'll create a new test file following iOS testing best practices:
       
-      3. Update task acceptance criteria:
-         - Mark "Unit tests pass" criteria based on results
+      1. Determine test type and location:
+         - Unit tests in [Target]Tests/
+         - UI tests in [Target]UITests/
+         - Integration tests in appropriate test target
       
-      4. If tests pass, check if README needs updating:
-         - Analyze significant code changes
-         - Compare with current README content
-         - Suggest README updates if needed
+      2. Structure the test file:
+         - Import XCTest and tested module
+         - Create test class inheriting from XCTestCase
+         - Add setup/teardown if needed
+         - Group related tests using MARK comments
       
-      This validates implementation quality through automated testing and keeps
-      documentation in sync with implementation.
+      3. Follow naming conventions:
+         - Test class: [TestedClass]Tests
+         - Test methods: test_[scenario]_[expectedResult]
+         - Test files: [TestedClass]Tests.swift
+      
+      4. Include essential test components:
+         - Arrange (setup test data)
+         - Act (perform the test)
+         - Assert (verify results)
+      
+      5. Add test documentation:
+         - Test purpose and requirements
+         - Any special setup needed
+         - Expected outcomes
+      
+      This creates well-structured, maintainable tests.
 
   - type: react
-    event: "test_failure"
+    conditions:
+      - pattern: "test coverage|coverage test"
     action: |
-      # Analyze test failures and suggest fixes
+      # Check test coverage
       
-      When tests fail, I'll:
+      I'll analyze test coverage using Xcode's coverage tools:
       
-      1. Analyze the failure details:
-         - Identify failing tests
-         - Determine failure reasons
-         - Isolate problematic code
+      1. Enable code coverage in scheme settings
+      2. Run test suite with coverage enabled
+      3. Generate coverage report
+      4. Identify areas needing more tests
+      5. Suggest specific test cases to add
       
-      2. Create a learning about the test failure:
-         - Document the failure details
-         - Record potential solutions
-         - Link to relevant code and specifications
+      Coverage reports will be saved to test_output/coverage/
+
+  - type: react
+    conditions:
+      - pattern: "test performance|performance test"
+    action: |
+      # Create performance tests
       
-      3. Store the learning for future reference:
-         - Save to `.cursor/learnings/` with proper ID (managed by the knowledge_management rule)
-         - Update the learnings index
+      I'll create performance tests using XCTest's measure block:
       
-      This captures valuable information from failures and helps prevent 
-      similar issues in the future.
+      1. Identify critical paths to test
+      2. Set up baseline metrics
+      3. Create measure blocks
+      4. Add performance assertions
+      5. Document performance requirements
+      
+      This ensures critical code paths maintain expected performance.
 
   - type: react
     event: "file_change"
     conditions:
-      - pattern: "src/.*\\.(js|ts|jsx|tsx|py|rs|go|java|rb|cpp|c|h|hpp)$"
+      - pattern: "*Tests/*.swift"
+      - pattern: "*UITests/*.swift"
     action: |
-      # Check for test files when source files change
+      # Validate test file quality
       
-      This ensures all components have corresponding test coverage and 
-      tracks changes that might require documentation updates.
-  
-  #
-  # SECTION 3: VERSION CONTROL
-  #
-  
-  - type: react
-    conditions:
-      - pattern: "file_change|file_save"
-    action: |
-      # Automatically commit changes using conventional commits format
+      When test files change, I'll verify:
       
-      When a file is changed or saved, I'll:
-      1. Determine the appropriate commit type based on the change:
-         - `feat`: For new features or functionality
-         - `fix`: For bug fixes
-         - `docs`: For documentation changes (including specs)
-         - `style`: For formatting changes that don't affect code
-         - `refactor`: For code restructuring without feature changes
-         - `perf`: For performance improvements
-         - `test`: For adding or correcting tests
-         - `chore`: For maintenance tasks and build changes
-
-      2. Extract scope from the file path (directory structure)
+      1. Test structure follows conventions
+      2. All test methods are properly named
+      3. Setup/teardown are appropriate
+      4. Assertions are meaningful
+      5. Documentation is complete
       
-      3. Create a commit message in the format: `type(scope): description`
-      
-      4. For spec files, I'll use the format: `docs(specs): update specifications for <component>`
-  
-  #
-  # SECTION 4: README MANAGEMENT
-  #
-  
-  - type: react
-    conditions:
-      - pattern: "readme check|check readme"
-    action: |
-      # Check if README needs updating
-      
-      I'll analyze the README file and codebase to identify documentation gaps:
-      
-      1. Compare README content with actual project features:
-         - Look for implemented features not described in README
-         - Check if API documentation matches current implementation
-         - Verify installation instructions are correct
-         - Ensure usage examples reflect current behavior
-      
-      2. Generate a README validation report:
-         - List missing or outdated sections
-         - Provide specific update recommendations
-         - Prioritize documentation gaps by importance
-      
-      This helps keep documentation in sync with implementation.
-
-  - type: react
-    conditions:
-      - pattern: "readme update|update readme"
-    action: |
-      # Update README to reflect current project state
-      
-      I'll update the README file to match the current state of the project:
-      
-      1. Preserve existing structure while adding/updating content:
-         - Add missing feature descriptions
-         - Update outdated API documentation
-         - Refresh installation instructions if needed
-         - Update usage examples for changed functionality
-      
-      2. Generate a commit for the README changes:
-         - Use commit type `docs`
-         - Include scope `readme`
-         - Provide descriptive message about updates
-      
-      This ensures documentation accurately reflects the current implementation.
-  
-  #
-  # SECTION 5: WORKFLOW INTEGRATION
-  #
-  
-  - type: react
-    event: "implementation_complete"
-    action: |
-      # Integrated workflow when implementation is complete
-      
-      When implementation is complete, I'll:
-      
-      1. Run verification tests:
-         - Execute tests based on project type
-         - Verify all tests pass
-      
-      2. If tests pass:
-         - Update the task status to Done (✅)
-         - Set end date to current date
-         - Extract and save any learnings (via knowledge_management rule)
-         - Mark associated specs as completed (via specification_management rule)
-         - Update the task index
-         - Check if README needs updating based on implemented features
-         - Commit the changes with appropriate message
-      
-      3. If tests fail:
-         - Record verification failure
-         - Request fixes before allowing completion
-         - Do not commit the changes
-      
-      This ensures only properly tested implementations are marked complete
-      and committed to version control with up-to-date documentation.
+      This maintains high-quality tests.
 
   - type: suggest
     message: |
-      ### Development Workflow System
+      ### Swift Testing Guidelines
 
-      Your development process is managed through an integrated workflow:
+      I follow iOS testing best practices:
 
-      **Task Management:**
-      - `task create` - Create a new task
-      - `task start` - Mark a task as active
-      - `task done` - Mark a task as complete
-      - `task list` - Show all tasks with status
-      - Automatic task creation for implementation requests
+      **Test Creation:**
+      - `test create "ClassToTest"` - Create new test file
+      - `test coverage` - Check test coverage
+      - `test performance` - Create performance tests
 
-      **Testing Framework:**
-      - `test run` - Execute tests for the project
-      - Automatic test file creation when implementation starts
-      - Test coverage verification for source files
-      - Test failure analysis and learning capture
+      **Test Types:**
+      - Unit Tests (XCTest)
+      - UI Tests (XCUITest)
+      - Integration Tests
+      - Performance Tests
 
-      **Version Control:**
-      - Automatic commits using conventional format
-      - Commit prevention for failing tests
-      - Appropriate commit types based on change type
-      - Proper scoping based on file structure
+      **Conventions:**
+      - Test class: [TestedClass]Tests : XCTestCase
+      - Test methods: test_[scenario]_[expectedResult]
+      - Files in appropriate test target
+      - Clear arrange-act-assert structure
 
-      **README Management:**
-      - `readme check` - Validate README against current project state
-      - `readme update` - Update README to reflect implemented features
-      - Automatic README validation after successful tests
-      - Documentation kept in sync with implementation
+      **Automatic Behaviors:**
+      - When test files change → Validate structure
+      - When implementing features → Suggest test cases
+      - When coverage drops → Recommend new tests
 
-      **Integrated Behaviors:**
-      - Implementation request → Create specs → Create task → Create tests → Implement
-      - Implementation complete → Run tests → Update task → Check README → Capture learnings → Commit changes
-      - Test failure → Analyze issues → Create learnings → Prevent completion
-
-      This system ensures a consistent, high-quality development process from
-      task creation through testing to version control, with documentation
-      that stays in sync with your codebase.
+      This ensures comprehensive test coverage while maintaining
+      test quality and consistency.
 
 examples:
-  # Task Management Examples
   - input: |
-      task create "Implement user authentication flow"
-    output: "Task created: TASK-2025-03-05-01 - Implement user authentication flow"
+      test create "LoginViewController"
+    output: "Created LoginViewControllerTests.swift with unit test structure"
 
   - input: |
-      task list
-    output: "Listing all tasks with their current status..."
-
-  # Testing Examples
-  - input: |
-      test run
-    output: "Running tests... ✅ Tests passed successfully! Task updated to reflect passing tests."
-
-  # Version Control Examples
-  - input: |
-      # After adding a new function
-      feat(auth): add user authentication function
-    output: "Changes committed with message: feat(auth): add user authentication function"
-
-  # README Management Examples
-  - input: |
-      readme check
-    output: "README validation complete. Found 2 sections that need updating to reflect recent changes."
-
-  # Integrated Workflow Examples
-  - input: |
-      Implementation complete for user authentication
-    output: "Running verification tests... ✅ Implementation verified by tests. README update suggested for new auth feature. Task marked as complete and changes committed."
+      test coverage
+    output: "Generated coverage report. Current coverage: 85%. Areas needing tests: UserAuthentication.swift"
 
 metadata:
   priority: high
   version: 1.0
-</rule> 
+</rule>
 
 # Swift Testing Best Practices for Test-Driven Development (TDD)
 
-As an AI assistant driving iOS development through testing, I MUST follow these guidelines to create effective, maintainable, and reliable tests, ensuring code quality and resilience. The primary goal is to practice TDD: **write tests *before* production code.**
+As an AI assistant driving iOS development through testing, I MUST follow these guidelines to create effective, maintainable, and reliable tests, ensuring code quality and resilience. The primary goal is to practice TDD: **write tests *before* production code.**. Before adding code to the codebase I will create the unit tests abd connit thenm. After that I'll rationalize the task and will work in all the tests created.
 
 ## General Testing Philosophy
 
-- **TDD First**: Write a failing test *before* writing the implementation code.
+- **TDD First**: Write a failing test *before* writing the implementation code. ALL FLOW OFF WRITING THE TEST MUST FOLLOW RED GREEN REFACTOR.
 - **Test Behavior, Not Implementation**: Focus on *what* the code should do, not *how* it does it.
 - **SOLID Alignment**: Design tests to validate contracts defined by protocols and interfaces (Dependency Inversion).
 - **Single Responsibility Principle (SRP)**: Each test method should validate one specific aspect or behavior.

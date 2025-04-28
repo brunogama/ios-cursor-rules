@@ -38,9 +38,7 @@ struct user_data {
 
 ## Code Formatting and Organization
 
-- Use 4 spaces for indentation (not tabs)
-- Keep lines under 120 characters
-- Use MARK comments to organize code sections:
+- All code produced must follow Apple's Code Formatting on its OPEN SOURCE PROJECTS
 
 ```swift
 // MARK: - Properties
@@ -281,6 +279,7 @@ func process(product: Product, quantity: Int, paymentMethod: PaymentMethod) thro
 ## Architecture
 
 - Follow SOLID principles
+- Code MUST FOLLOW OBJECT CALLISTHENICS
 - Use appropriate design patterns: MVC, MVVM, VIP/Clean, depending on the project size and complexity
 - For small to medium projects, MVVM works well with SwiftUI/Combine
 - For larger projects, consider a more modular approach like VIP/Clean Architecture

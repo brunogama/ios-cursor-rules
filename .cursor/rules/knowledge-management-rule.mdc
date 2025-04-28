@@ -62,8 +62,8 @@ actions:
       I'll create a structured learning document with:
       - Unique ID (format: LEARN-YYYY-MM-DD-NN)
       - Title and short description
-      - Detailed description of the learning
-      - Relevant code files, tasks (managed by development_workflow_system), specifications (managed by specification_management), and documents
+      - Detailed description of the learning (including context related to **SOLID, TDD, SRP, Calisthenics, resilience** if applicable)
+      - Relevant code files (using `Sources/`, `Tests/` paths), tasks (managed by development_workflow_system), specifications (managed by specification_management), and documents
       - Date of capture
       - Keywords for easy retrieval
       
@@ -270,11 +270,11 @@ actions:
   - type: react
     event: "file_change"
     conditions:
-      - pattern: "src/.*\\.(js|ts|jsx|tsx|py|rs|go|java|rb|cpp|c)$"
+      - pattern: "*.swift|*.h|*.m|*.storyboard|*.xib|*.xcodeproj|*.xcworkspace|*.xcassets|*.plist|*.entitlements|*.strings|*.stringsdict|*.pbxproj|Podfile|Podfile.lock|Package.swift|Package.resolved"
     action: |
-      # Recommend relevant insights for changed files
+      # Automatically recommend insights for changed files
       
-      When source files change, I'll:
+      When iOS project files change, I'll:
       
       1. Analyze the code context and changes
       2. Identify relevant insights from the knowledge base
@@ -316,12 +316,12 @@ actions:
 examples:
   # Knowledge Capture Examples
   - input: |
-      learn add "Authentication Best Practices" "Security patterns for JWT implementation" "When implementing JWT authentication, we discovered that using short expiration times (15min) with refresh tokens provides the best balance of security and user experience."
+      learn add "Authentication Best Practices" "Security patterns for JWT implementation" "When implementing JWT authentication (following SRP), we discovered that using short expiration times (15min) with refresh tokens provides the best balance of security and user experience."
     output: "Learning created: LEARN-2025-03-05-01 - Authentication Best Practices"
 
   - input: |
-      document add "architecture/system-design.md"
-    output: "Document registered: architecture/system-design.md"
+      document add "Architecture/SystemDesign.md"
+    output: "Document registered: Architecture/SystemDesign.md"
 
   # Knowledge Organization Examples
   - input: |
@@ -339,7 +339,7 @@ examples:
 
   - input: |
       insight apply:INS-2025-03-05-02
-    output: "Applied 'Optimized Database Query Pattern' insight to current code with 3 specific improvements."
+    output: "Applied 'Optimized Database Query Pattern' insight (related to SRP) to current code with 3 specific improvements."
 
 metadata:
   priority: high
