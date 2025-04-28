@@ -1,0 +1,347 @@
+---
+description: Comprehensive knowledge management system for capturing, organizing, and applying project knowledge
+globs: 
+alwaysApply: true
+---
+# Knowledge Management System
+
+Rule for capturing, organizing, refining, and applying knowledge throughout the project lifecycle.
+
+<rule>
+name: knowledge_management
+filters:
+  # Information tracking filters
+  - type: event
+    pattern: "knowledge_capture"
+  - type: event
+    pattern: "file_create"
+  - type: event
+    pattern: "file_change"
+  - type: command
+    pattern: "learn"
+  - type: command
+    pattern: "document"
+  - type: event
+    pattern: "conversation_insight"
+  - type: file_change
+    pattern: ".cursor/docs/*"
+  
+  # Learning refinement filters
+  - type: event
+    pattern: "learning_create"
+  - type: event
+    pattern: "learning_update"
+  - type: file_change
+    pattern: ".cursor/learnings/*.md"
+  - type: command
+    pattern: "knowledge"
+  
+  # Actionable insights filters
+  - type: command
+    pattern: "insight"
+  - type: event
+    pattern: "implementation_complete"
+  - type: event
+    pattern: "task_complete"
+  - type: event
+    pattern: "code_review"
+  - type: file_change
+    pattern: "src/*"
+
+actions:
+  #
+  # SECTION 1: KNOWLEDGE CAPTURE
+  #
+  
+  - type: react
+    conditions:
+      - pattern: "learn add|learning create"
+    action: |
+      # Create a new learning entry
+      
+      I'll create a structured learning document with:
+      - Unique ID (format: LEARN-YYYY-MM-DD-NN)
+      - Title and short description
+      - Detailed description of the learning
+      - Relevant code files, tasks (managed by development_workflow_system), specifications (managed by specification_management), and documents
+      - Date of capture
+      - Keywords for easy retrieval
+      
+      The learning will be stored in `.cursor/learnings/` 
+      and indexed in `.cursor/LEARNINGS.md`
+
+  - type: react
+    conditions:
+      - pattern: "document add|document create|document detect"
+    action: |
+      # Register a document in the knowledge base
+      
+      I'll register the document by:
+      - Storing a copy in `.cursor/docs/` if it's not already there
+      - Creating a learning entry about this document
+      - Adding the document to the documents index
+      - Extracting key information from the document
+      - Creating cross-references to related content including specifications (managed by specification_management)
+      
+      This ensures all project documentation is centrally tracked
+      and discoverable.
+
+  - type: react
+    event: "conversation_insight"
+    action: |
+      # Automatically capture important insights from our conversations
+      
+      When I identify valuable insights in our conversation, I'll:
+      - Create a learning entry with the insight
+      - Generate a unique ID for the learning
+      - Categorize and tag the insight appropriately
+      - Add context and relevant connections to tasks (managed by development_workflow_system)
+      - Index the insight for future reference
+      
+      This ensures important information isn't lost.
+
+  - type: react
+    event: "file_change"
+    conditions:
+      - pattern: ".cursor/docs/.*"
+    action: |
+      # Automatically process new documents added to docs directory
+      
+      When a new document is added to `.cursor/docs/`, I'll:
+      - Extract key information from the document
+      - Create a learning entry linked to this document
+      - Update the documents index
+      - Identify related content including specifications (managed by specification_management)
+      - Generate appropriate metadata
+      
+      This ensures all documentation is properly integrated into
+      the knowledge base.
+  
+  #
+  # SECTION 2: KNOWLEDGE ORGANIZATION & REFINEMENT
+  #
+  
+  - type: react
+    conditions:
+      - pattern: "learn categorize|learning categorize"
+    action: |
+      # Categorize and organize learnings
+      
+      I'll organize all learnings into meaningful categories:
+      
+      1. Analyze all learning content to identify topics and themes
+      2. Categorize learnings into domains like:
+         - Architecture, Performance, Security, DevOps
+         - UX, API, Database, Testing
+         - Frontend, Backend, Mobile, Tooling
+         - Process, Bugs, Documentation
+      3. Create category files in `.cursor/learning_categories/`
+      4. Generate a categories index with links to all categorized learnings
+      5. Identify uncategorized learnings for further review
+      
+      This makes knowledge more discoverable by organizing it into logical domains.
+
+  - type: react
+    conditions:
+      - pattern: "learn refine:(.*)"
+    action: |
+      # Refine a specific learning to enhance its value
+      
+      I'll refine the specified learning by:
+      
+      1. Extracting the core learning ID from the command
+      2. Creating an enhanced version with additional sections:
+         - Keywords extracted from content
+         - Key takeaways for quick reference
+         - Potential applications of this knowledge
+         - Related learnings on similar topics
+         - Improved formatting and organization
+      3. Preserving all original content while adding refinements
+      4. Adding a "Last Refined" date
+      
+      This refinement process transforms basic learnings into comprehensive 
+      knowledge assets.
+
+  - type: react
+    conditions:
+      - pattern: "learn extract|knowledge extract"
+    action: |
+      # Extract patterns and valuable information from all learnings
+      
+      I'll analyze all learnings to identify patterns:
+      
+      1. Generate statistics on learning types and frequency
+      2. Extract most frequently mentioned topics and terms
+      3. Identify potential best practices across learnings
+      4. Find recurring challenges and their solutions
+      5. Highlight solution patterns that could be reused
+      
+      This extraction creates a "wisdom layer" that surfaces valuable 
+      patterns across individual learnings.
+
+  - type: react
+    conditions:
+      - pattern: "learn metrics|knowledge metrics"
+    action: |
+      # Generate metrics and insights about captured knowledge
+      
+      I'll analyze the knowledge base to provide metrics:
+      
+      1. Calculate overall knowledge metrics:
+         - Total learnings and documents
+         - Learnings per day/week/month
+         - Word count and depth analysis
+      2. Analyze knowledge capture trends over time
+      3. Examine distribution by knowledge type and category
+      4. Assess knowledge quality based on content metrics
+      5. Provide recommendations to improve knowledge capture
+      
+      These metrics help track knowledge growth and identify improvement areas.
+
+  - type: react
+    event: "file_change"
+    conditions:
+      - pattern: ".cursor/learnings/.*\\.md$"
+    action: |
+      # Automatically enhance learning when created or updated
+      
+      When a learning file is created or updated, I'll:
+      
+      1. Check if the learning has all expected sections
+      2. Add missing sections like short descriptions or keywords
+      3. Generate keywords from content if missing
+      4. Identify potentially related learnings
+      5. Add cross-references to similar knowledge assets, tasks (managed by development_workflow_system), and specifications (managed by specification_management)
+      
+      This automatic enhancement ensures consistent quality across all learnings.
+  
+  #
+  # SECTION 3: ACTIONABLE INSIGHTS & APPLICATION
+  #
+  
+  - type: react
+    conditions:
+      - pattern: "insight generate|generate insights"
+    action: |
+      # Generate actionable insights from project knowledge
+      
+      I'll analyze the knowledge base to create actionable insights:
+      
+      1. Extract best practices from existing learnings
+      2. Identify recurring challenges and their solutions
+      3. Detect patterns in successful implementations
+      4. Find optimization opportunities based on performance learnings
+      5. Suggest specific, actionable recommendations that can be applied to tasks (managed by development_workflow_system)
+      
+      Unlike general knowledge extraction, these insights will be concrete, 
+      actionable recommendations that can be directly applied.
+
+  - type: react
+    conditions:
+      - pattern: "insight apply:(.*)"
+    action: |
+      # Apply specific insight to current code
+      
+      I'll apply the specified insight to the current code context:
+      
+      1. Retrieve the specific insight
+      2. Analyze how it applies to the current code
+      3. Generate recommended changes based on the insight
+      4. Explain the rationale behind each recommendation
+      5. Provide before/after comparisons
+      
+      This transforms abstract knowledge into concrete code improvements.
+
+  - type: react
+    event: "implementation_complete"
+    action: |
+      # Suggest improvements based on collected insights
+      
+      When implementation is completed, I'll:
+      
+      1. Analyze the implemented code
+      2. Compare against insights database
+      3. Identify potential improvements based on project learnings
+      4. Suggest specific optimizations, patterns, or techniques
+      5. Provide concrete examples of how to implement the suggestions
+      
+      This helps continuously improve code quality based on accumulated knowledge.
+
+  - type: react
+    event: "file_change"
+    conditions:
+      - pattern: "src/.*\\.(js|ts|jsx|tsx|py|rs|go|java|rb|cpp|c)$"
+    action: |
+      # Recommend relevant insights for changed files
+      
+      When source files change, I'll:
+      
+      1. Analyze the code context and changes
+      2. Identify relevant insights from the knowledge base
+      3. Suggest applicable best practices or optimizations
+      4. Focus on concrete, actionable recommendations
+      5. Prioritize insights specific to the current code domain
+      
+      This provides just-in-time knowledge application rather than 
+      requiring manual knowledge lookup.
+
+  - type: suggest
+    message: |
+      ### Knowledge Management System
+
+      Your project knowledge is automatically captured, organized, and applied:
+
+      **Knowledge Capture:**
+      - `learn add "Title" "Description" "Content"` - Create a new learning entry
+      - `document add "path/to/document"` - Register a document in the knowledge base
+      - Automatic capture of conversation insights
+      - Automatic processing of documents in `.cursor/docs/`
+
+      **Knowledge Organization:**
+      - `learn categorize` - Organize learnings into meaningful categories
+      - `learn refine:LEARN-ID` - Create an enhanced version of a specific learning
+      - `learn extract` - Identify patterns across all learnings
+      - `learn metrics` - Generate knowledge capture metrics
+
+      **Knowledge Application:**
+      - `insight generate` - Extract actionable insights from knowledge base
+      - `insight apply:ID` - Apply a specific insight to current code
+      - Automatic suggestion of improvements after implementation
+      - Just-in-time insight recommendations for changed files
+
+      This integrated system ensures knowledge flows from capture through 
+      organization to practical application throughout your project, working
+      seamlessly with the development workflow and specification management systems.
+
+examples:
+  # Knowledge Capture Examples
+  - input: |
+      learn add "Authentication Best Practices" "Security patterns for JWT implementation" "When implementing JWT authentication, we discovered that using short expiration times (15min) with refresh tokens provides the best balance of security and user experience."
+    output: "Learning created: LEARN-2025-03-05-01 - Authentication Best Practices"
+
+  - input: |
+      document add "architecture/system-design.md"
+    output: "Document registered: architecture/system-design.md"
+
+  # Knowledge Organization Examples
+  - input: |
+      learn categorize
+    output: "Learning categorization complete. Categories index created at .cursor/learning_categories/CATEGORIES.md"
+
+  - input: |
+      learn refine:LEARN-2025-03-05-01
+    output: "Learning refined. Enhanced version created at .cursor/learnings/LEARN-2025-03-05-01_refined.md"
+
+  # Knowledge Application Examples
+  - input: |
+      insight generate
+    output: "Generated 5 actionable insights from project knowledge base, prioritized by impact."
+
+  - input: |
+      insight apply:INS-2025-03-05-02
+    output: "Applied 'Optimized Database Query Pattern' insight to current code with 3 specific improvements."
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 

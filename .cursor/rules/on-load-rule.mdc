@@ -1,0 +1,103 @@
+---
+description: MUST READ AT START - Critical Development Principles
+globs: on_start
+alwaysApply: false
+---
+# Critical Development Principles
+
+Rule for establishing non-negotiable development principles that must be followed at all times.
+
+<rule>
+name: critical_development_principles
+filters:
+  - type: event
+    pattern: "load"
+  - type: event
+    pattern: "start"
+  - type: event
+    pattern: "cursor_start"
+  - type: command
+    pattern: "help"
+
+actions:
+  - type: react
+    event: "load"
+    priority: critical
+    action: |
+      # Non-negotiable development principles
+      
+      I MUST follow these principles for ALL development activities:
+      
+      1. SPECIFICATIONS FIRST
+         - I will NEVER begin implementation without creating specifications
+         - All user requests containing "create", "implement", "build", or "develop" 
+           MUST trigger specification creation BEFORE any code is written
+         - Specifications must be stored in `.cursor/specs/` with proper formatting
+         - Specifications index must be updated in `.cursor/SPECS.md`
+         - This is managed by the specification_management rule
+      
+      2. TASK TRACKING
+         - All development activities must be tracked as tasks
+         - Tasks must follow proper state transitions: Open → Active → Done
+         - Implementation cannot be considered complete without task completion
+         - This is managed by the development_workflow_system rule
+      
+      3. QUALITY ASSURANCE
+         - All code must have corresponding tests where applicable
+         - No implementation can be considered complete without tests
+         - All code should follow project-specific style guidelines
+         - Testing is managed by the development_workflow_system rule
+      
+      4. KNOWLEDGE CAPTURE
+         - Important learnings must be documented during implementation
+         - Solutions to complex problems must be captured for future reference
+         - This is managed by the knowledge_management rule
+      
+      These principles are NON-NEGOTIABLE and must be followed without exception.
+      Failure to follow these principles is considered a critical error.
+
+  - type: react
+    event: "cursor_start"
+    priority: critical
+    action: |
+      # Initialization check for development principles
+      
+      I will verify:
+      
+      1. Specifications directory exists (.cursor/specs/) - managed by specification_management rule
+      2. Task tracking is properly configured (.cursor/tasks/) - managed by development_workflow_system rule
+      3. Knowledge capture system is ready (.cursor/learnings/) - managed by knowledge_management rule
+      
+      If any of these components are missing, I will prioritize setting them up
+      before proceeding with any development activities.
+      
+      I will also remind myself that SPECIFICATIONS MUST COME BEFORE IMPLEMENTATION
+      for any request involving creation or development of new features.
+
+  - type: suggest
+    message: |
+      ### Critical Development Principles
+      
+      As your AI assistant, I'm following these critical principles:
+      
+      1. **Specifications First**: I will always create detailed specs before implementing any feature (specification_management rule)
+      2. **Task Tracking**: All development work is tracked as formal tasks (development_workflow_system rule)
+      3. **Quality Assurance**: All code will have corresponding tests (development_workflow_system rule)
+      4. **Knowledge Capture**: Important learnings will be documented (knowledge_management rule)
+      
+      These principles ensure high-quality, well-documented, and traceable development.
+      I will follow this workflow for all implementation requests.
+
+examples:
+  - input: |
+      Help me create a new feature
+    output: "Before implementing this feature, I'll create detailed specifications for it."
+
+  - input: |
+      Implement a user authentication system
+    output: "I'll start by creating specifications for the user authentication system, then proceed with implementation once those are approved."
+
+metadata:
+  priority: critical
+  version: 1.0
+</rule> 

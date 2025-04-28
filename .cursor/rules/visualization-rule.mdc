@@ -1,0 +1,129 @@
+---
+description: Creates visual representations of project specifications, tasks, and knowledge
+globs: 
+alwaysApply: true
+---
+# Visualization System
+
+Rule for generating visual representations of project elements to improve understanding and communication.
+
+<rule>
+name: visualization_system
+filters:
+  - type: command
+    pattern: "visualize"
+  - type: command
+    pattern: "diagram"
+  - type: command
+    pattern: "chart"
+  - type: event
+    pattern: "spec_update"
+  - type: event
+    pattern: "task_summary"
+
+actions:
+  - type: react
+    conditions:
+      - pattern: "visualize specs|diagram specs"
+    action: |
+      # Generate specification visualization
+      
+      I'll create a visual representation of project specifications:
+      
+      1. Generate a dependency diagram showing relationships between specs
+      2. Create a completion heatmap showing progress across domains
+      3. Visualize requirement distribution and completion status
+      4. Show timeline of specification development
+      
+      The visualization will use SVG or Mermaid diagrams for easy rendering.
+
+  - type: react
+    conditions:
+      - pattern: "visualize tasks|diagram tasks"
+    action: |
+      # Generate task visualization
+      
+      I'll create a visual representation of project tasks:
+      
+      1. Generate a Gantt chart of tasks with timelines
+      2. Create a kanban-style board visualization showing task status
+      3. Show task dependencies and critical paths
+      4. Visualize task distribution across domains
+      
+      This provides a quick visual overview of project progress.
+
+  - type: react
+    conditions:
+      - pattern: "visualize knowledge|diagram knowledge"
+    action: |
+      # Generate knowledge visualization
+      
+      I'll create a visual representation of the knowledge base:
+      
+      1. Generate a knowledge map showing relationships between learnings
+      2. Create category distribution charts
+      3. Show knowledge growth over time
+      4. Visualize knowledge clusters and gaps
+      
+      This helps identify patterns and relationships in captured knowledge.
+
+  - type: react
+    conditions:
+      - pattern: "visualize architecture|diagram architecture"
+    action: |
+      # Generate architecture visualization
+      
+      I'll create a visual representation of the project architecture:
+      
+      1. Generate component diagrams showing system structure
+      2. Create sequence diagrams for key workflows
+      3. Visualize data flow between components
+      4. Show dependency relationships
+      
+      This provides a clear visual understanding of system design.
+
+  - type: react
+    event: "task_summary"
+    action: |
+      # Automatically include task visualizations in summaries
+      
+      When generating task summaries, I'll include:
+      
+      1. Visual progress indicators
+      2. Timeline charts of task completion
+      3. Distribution visualizations by category
+      4. Burndown/burnup charts
+      
+      This adds visual context to textual reports.
+
+  - type: suggest
+    message: |
+      ### Visualization System
+
+      I can create visual representations of project elements:
+
+      **Commands:**
+      - `visualize specs` - Create specification relationship and progress diagrams
+      - `visualize tasks` - Generate task timelines and status visualizations
+      - `visualize knowledge` - Create knowledge maps and category charts
+      - `visualize architecture` - Generate system architecture diagrams
+
+      **Automatic Behaviors:**
+      - When generating reports → Include relevant visualizations
+      - When summarizing status → Add visual progress indicators
+
+      Visualizations use SVG or Mermaid diagrams and can be exported for documentation.
+
+examples:
+  - input: |
+      visualize specs
+    output: "Generated specification visualization showing relationships and completion status across 24 specifications."
+
+  - input: |
+      visualize architecture
+    output: "Created architecture diagram showing 5 core components and their interactions."
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

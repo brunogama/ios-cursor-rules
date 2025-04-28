@@ -4,16 +4,41 @@
 # That can causes issues, such as an out of date README.md which is providing it bad context.
 
 # CAUTION: you might actually need a file that matches these to be indexed. If so, add them to overrides below.
-# I intentionally ignore documentation, logs, and configuration by default as to not pollute the context.
+# I intentionally ignore documentation, build artifacts, configuration, and OS-specific files by default as to not pollute the context.
 
+# General Documentation & Config
 *.md
 docs/
 *.json
 *.jsonc
 *.log
+*.plist
 
-# DOCUMENTATION OVERRIDES
+# Build Artifacts & OS Specific
+DerivedData/
+xcuserdata/
+*.build/
+.DS_Store
+
+# Dependency Management (can be noisy)
+Podfile
+Podfile.lock
+Cartfile
+Cartfile.resolved
+fastlane/
+
+# Xcode Project/Workspace Files (can be large/complex)
+*.xcodeproj/
+*.xcworkspace/
+*.xcscheme
+
+# Generated Code (often not needed for general understanding)
+*.generated.swift
+
+# DOCUMENTATION OVERRIDES (Files you WANT indexed)
+README.md # Keep main readme indexed
 AI-README.md
 AI-CONTRIBUTING.md
 AI-CHANGELOG.md
 AI-TODO.md
+Package.swift # Often contains important dependency logic

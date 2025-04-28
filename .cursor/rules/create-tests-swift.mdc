@@ -3,19 +3,316 @@ description:
 globs: 
 alwaysApply: false
 ---
-# Swift Testing Best Practices
+# Swift Testing Best Practices Development Workflow System
 
-As an AI assistant helping with testing iOS applications, I should follow these guidelines to create effective, maintainable, and reliable tests.
+Rule for managing the complete development lifecycle including task tracking, testing, and version control.
+
+<rule>
+name: development_workflow_system
+filters:
+  # Task management filters
+  - type: event
+    pattern: "task_start"
+  - type: event
+    pattern: "task_complete"
+  - type: command
+    pattern: "task"
+  - type: event
+    pattern: "user_request"
+  - type: event 
+    pattern: "implementation_complete"
+  
+  # Testing filters
+  - type: event
+    pattern: "implementation_start"
+  - type: command
+    pattern: "test"
+  - type: file_change
+    pattern: "src/*"
+  - type: file_change
+    pattern: "tests/*"
+  - type: event
+    pattern: "test_failure"
+  
+  # Git commit filters
+  - type: event
+    pattern: "build_success"
+  - type: event
+    pattern: "test_success"
+  - type: event
+    pattern: "file_save"
+  - type: file_change
+    pattern: "*"
+  
+  # README management filters
+  - type: command
+    pattern: "readme"
+  - type: file_change
+    pattern: "README.md"
+
+actions:
+  #
+  # SECTION 1: TASK MANAGEMENT
+  #
+  
+  - For each function created during the development cycle one test should be implemented together to assert the code generated AND IMPLEMENTED PASSING.
+     - For each specification, create appropriate test files:
+        - Create test files in the proper location and format
+        - Link tests to the specification requirements
+        - Add placeholder tests for each requirement
+        - Include references to the specs and task
+This ensures tests are created before implementation, supporting 
+test-driven development.
+  
+  #
+  # SECTION 2: TESTING MANAGEMENT
+  #
+
+      
+      2. Process test results:
+         - If tests pass, update active task to reflect passing tests
+         - If tests fail, create detailed failure report
+         - Trigger appropriate success/failure events
+      
+      3. Update task acceptance criteria:
+         - Mark "Unit tests pass" criteria based on results
+      
+      4. If tests pass, check if README needs updating:
+         - Analyze significant code changes
+         - Compare with current README content
+         - Suggest README updates if needed
+      
+      This validates implementation quality through automated testing and keeps
+      documentation in sync with implementation.
+
+  - type: react
+    event: "test_failure"
+    action: |
+      # Analyze test failures and suggest fixes
+      
+      When tests fail, I'll:
+      
+      1. Analyze the failure details:
+         - Identify failing tests
+         - Determine failure reasons
+         - Isolate problematic code
+      
+      2. Create a learning about the test failure:
+         - Document the failure details
+         - Record potential solutions
+         - Link to relevant code and specifications
+      
+      3. Store the learning for future reference:
+         - Save to `.cursor/learnings/` with proper ID (managed by the knowledge_management rule)
+         - Update the learnings index
+      
+      This captures valuable information from failures and helps prevent 
+      similar issues in the future.
+
+  - type: react
+    event: "file_change"
+    conditions:
+      - pattern: "src/.*\\.(js|ts|jsx|tsx|py|rs|go|java|rb|cpp|c|h|hpp)$"
+    action: |
+      # Check for test files when source files change
+      
+      This ensures all components have corresponding test coverage and 
+      tracks changes that might require documentation updates.
+  
+  #
+  # SECTION 3: VERSION CONTROL
+  #
+  
+  - type: react
+    conditions:
+      - pattern: "file_change|file_save"
+    action: |
+      # Automatically commit changes using conventional commits format
+      
+      When a file is changed or saved, I'll:
+      1. Determine the appropriate commit type based on the change:
+         - `feat`: For new features or functionality
+         - `fix`: For bug fixes
+         - `docs`: For documentation changes (including specs)
+         - `style`: For formatting changes that don't affect code
+         - `refactor`: For code restructuring without feature changes
+         - `perf`: For performance improvements
+         - `test`: For adding or correcting tests
+         - `chore`: For maintenance tasks and build changes
+
+      2. Extract scope from the file path (directory structure)
+      
+      3. Create a commit message in the format: `type(scope): description`
+      
+      4. For spec files, I'll use the format: `docs(specs): update specifications for <component>`
+  
+  #
+  # SECTION 4: README MANAGEMENT
+  #
+  
+  - type: react
+    conditions:
+      - pattern: "readme check|check readme"
+    action: |
+      # Check if README needs updating
+      
+      I'll analyze the README file and codebase to identify documentation gaps:
+      
+      1. Compare README content with actual project features:
+         - Look for implemented features not described in README
+         - Check if API documentation matches current implementation
+         - Verify installation instructions are correct
+         - Ensure usage examples reflect current behavior
+      
+      2. Generate a README validation report:
+         - List missing or outdated sections
+         - Provide specific update recommendations
+         - Prioritize documentation gaps by importance
+      
+      This helps keep documentation in sync with implementation.
+
+  - type: react
+    conditions:
+      - pattern: "readme update|update readme"
+    action: |
+      # Update README to reflect current project state
+      
+      I'll update the README file to match the current state of the project:
+      
+      1. Preserve existing structure while adding/updating content:
+         - Add missing feature descriptions
+         - Update outdated API documentation
+         - Refresh installation instructions if needed
+         - Update usage examples for changed functionality
+      
+      2. Generate a commit for the README changes:
+         - Use commit type `docs`
+         - Include scope `readme`
+         - Provide descriptive message about updates
+      
+      This ensures documentation accurately reflects the current implementation.
+  
+  #
+  # SECTION 5: WORKFLOW INTEGRATION
+  #
+  
+  - type: react
+    event: "implementation_complete"
+    action: |
+      # Integrated workflow when implementation is complete
+      
+      When implementation is complete, I'll:
+      
+      1. Run verification tests:
+         - Execute tests based on project type
+         - Verify all tests pass
+      
+      2. If tests pass:
+         - Update the task status to Done (✅)
+         - Set end date to current date
+         - Extract and save any learnings (via knowledge_management rule)
+         - Mark associated specs as completed (via specification_management rule)
+         - Update the task index
+         - Check if README needs updating based on implemented features
+         - Commit the changes with appropriate message
+      
+      3. If tests fail:
+         - Record verification failure
+         - Request fixes before allowing completion
+         - Do not commit the changes
+      
+      This ensures only properly tested implementations are marked complete
+      and committed to version control with up-to-date documentation.
+
+  - type: suggest
+    message: |
+      ### Development Workflow System
+
+      Your development process is managed through an integrated workflow:
+
+      **Task Management:**
+      - `task create` - Create a new task
+      - `task start` - Mark a task as active
+      - `task done` - Mark a task as complete
+      - `task list` - Show all tasks with status
+      - Automatic task creation for implementation requests
+
+      **Testing Framework:**
+      - `test run` - Execute tests for the project
+      - Automatic test file creation when implementation starts
+      - Test coverage verification for source files
+      - Test failure analysis and learning capture
+
+      **Version Control:**
+      - Automatic commits using conventional format
+      - Commit prevention for failing tests
+      - Appropriate commit types based on change type
+      - Proper scoping based on file structure
+
+      **README Management:**
+      - `readme check` - Validate README against current project state
+      - `readme update` - Update README to reflect implemented features
+      - Automatic README validation after successful tests
+      - Documentation kept in sync with implementation
+
+      **Integrated Behaviors:**
+      - Implementation request → Create specs → Create task → Create tests → Implement
+      - Implementation complete → Run tests → Update task → Check README → Capture learnings → Commit changes
+      - Test failure → Analyze issues → Create learnings → Prevent completion
+
+      This system ensures a consistent, high-quality development process from
+      task creation through testing to version control, with documentation
+      that stays in sync with your codebase.
+
+examples:
+  # Task Management Examples
+  - input: |
+      task create "Implement user authentication flow"
+    output: "Task created: TASK-2025-03-05-01 - Implement user authentication flow"
+
+  - input: |
+      task list
+    output: "Listing all tasks with their current status..."
+
+  # Testing Examples
+  - input: |
+      test run
+    output: "Running tests... ✅ Tests passed successfully! Task updated to reflect passing tests."
+
+  # Version Control Examples
+  - input: |
+      # After adding a new function
+      feat(auth): add user authentication function
+    output: "Changes committed with message: feat(auth): add user authentication function"
+
+  # README Management Examples
+  - input: |
+      readme check
+    output: "README validation complete. Found 2 sections that need updating to reflect recent changes."
+
+  # Integrated Workflow Examples
+  - input: |
+      Implementation complete for user authentication
+    output: "Running verification tests... ✅ Implementation verified by tests. README update suggested for new auth feature. Task marked as complete and changes committed."
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 
+
+# Swift Testing Best Practices for Test-Driven Development (TDD)
+
+As an AI assistant driving iOS development through testing, I MUST follow these guidelines to create effective, maintainable, and reliable tests, ensuring code quality and resilience. The primary goal is to practice TDD: **write tests *before* production code.**
 
 ## General Testing Philosophy
 
-- Test behavior, not implementation details
-- Write tests before or alongside production code (TDD/BDD when possible)
-- Keep tests simple, fast, and independent
-- Cover edge cases and error scenarios
-- Use descriptive test names that explain what's being tested
-- Follow the Arrange-Act-Assert (AAA) pattern
-- One assertion per test when possible for clarity and pinpointing failures
+- **TDD First**: Write a failing test *before* writing the implementation code.
+- **Test Behavior, Not Implementation**: Focus on *what* the code should do, not *how* it does it.
+- **SOLID Alignment**: Design tests to validate contracts defined by protocols and interfaces (Dependency Inversion).
+- **Single Responsibility Principle (SRP)**: Each test method should validate one specific aspect or behavior.
+- **Object Calisthenics**: Keep test methods small, focused, and avoid excessive setup. Aim for clarity.
+- **Keep Tests Simple, Fast, and Independent**: Avoid dependencies between tests.
+- **One Assertion Per Test**: Strive for one logical assertion per test method to pinpoint failures accurately (SRP).
 
 ## XCTest Framework Basics
 
@@ -74,30 +371,11 @@ class CartTests: XCTestCase {
 }
 ```
 
-## Test Types for iOS Applications
-
-### Unit Tests
-
-- Test individual components in isolation (classes, structs, functions)
-- Mock or stub external dependencies
-- Focus on business logic, not UI
-- Keep tests fast to enable frequent runs
-- Aim for high coverage of model and business logic code
-
-### Integration Tests
-
-- Test how components work together
-- Can include networking, persistence, and other integrations
-- May require more setup and teardown
-- Run these tests less frequently than unit tests
-
 ### UI Tests
 
-- Use XCUITest for automated UI testing
-- tests must follow Page 
-- Test critical user flows, not every possible interaction
-- Create helper methods for common UI interactions
-- Use accessibility identifiers to locate UI elements
+- Use XCUITest for automated UI testing.
+- Tests MUST follow the **Page Object Model (POM)** pattern for maintainability. Structure UI tests by screen or logical flow.
+- Test critical user flows, not every minor interaction.
 
 ```swift
 class LoginUITests: XCTestCase {
@@ -130,32 +408,12 @@ class LoginUITests: XCTestCase {
 }
 ```
 
-### Snapshot Tests
-
-- Use third-party libraries like SnapshotTesting to verify UI appearance
-- Create snapshot tests for critical screens and components
-- Run snapshot tests on the same simulator/configuration for consistency
-- Add tolerance to pixel comparisons when necessary
-
-```swift
-func test_profileView_withUserData_matchesSnapshot() {
-    // Arrange
-    let user = User(name: "John Doe", email: "john@example.com", avatarURL: nil)
-    let view = ProfileView(user: user)
-    
-    // Act & Assert
-    assertSnapshot(matching: view, as: .image)
-}
-```
-
 ## Mocking and Stubbing
 
 ### Creating Test Doubles
 
-- Create mocks for services, repositories, and dependencies
-- Use protocols to define interfaces for easier mocking
-- Consider using a mocking framework like Cuckoo or Mockingbird
-- Keep mocks in a separate test target folder
+- Create mocks/stubs for dependencies to isolate the System Under Test (SUT).
+- **Use protocols** (Dependency Inversion) to define interfaces, making mocking easier and promoting loose coupling (SOLID).
 
 ```swift
 // Protocol that enables mocking
@@ -212,179 +470,37 @@ func test_fetchUserProfile_withSuccess_returnsUserObject() {
 
 ### Dependency Injection
 
-- Design classes to accept dependencies via initializers or properties
-- Use protocol types rather than concrete implementations for dependencies
-- Consider using a DI container for complex apps (like Swinject)
-
-## Advanced Testing Techniques
-
-### Testing Asynchronous Code
-
-- Use XCTest expectations for async operations
-- Properly wait for async operations with reasonable timeouts
-- For iOS 15+, use the async/await testing support
+- Design classes to accept dependencies via **initializer injection** (preferred) or property injection. This is crucial for testability and follows SOLID principles.
+- Use protocol types rather than concrete implementations for dependencies.
 
 ```swift
-// Testing async code with expectations
-func test_fetchData_withSuccessResponse_returnsCorrectData() {
+// Using the mock in tests
+func test_fetchUserProfile_withSuccess_returnsUserObject() {
     // Arrange
-    let service = NetworkService()
-    let expectation = XCTestExpectation(description: "Fetch data completion")
-    var receivedData: Data?
-    var receivedError: Error?
+    let mockService = MockNetworkService()
+    let userJSON = """
+    {"id": "123", "name": "Test User", "email": "test@example.com"}
+    """.data(using: .utf8)!
+    
+    mockService.dataToReturn = userJSON
+    let userRepository = UserRepository(networkService: mockService)
+    
+    let expectation = XCTestExpectation(description: "Fetch user profile")
+    var fetchedUser: User?
     
     // Act
-    service.fetchData(from: testURL) { result in
-        switch result {
-        case .success(let data):
-            receivedData = data
-        case .failure(let error):
-            receivedError = error
+    userRepository.fetchUser(id: "123") { result in
+        if case .success(let user) = result {
+            fetchedUser = user
         }
         expectation.fulfill()
     }
     
     // Assert
-    wait(for: [expectation], timeout: 5.0)
-    XCTAssertNotNil(receivedData)
-    XCTAssertNil(receivedError)
-}
-
-// iOS 15+ async/await testing
-func test_fetchUser_withValidID_returnsUser() async throws {
-    // Arrange
-    let service = UserService()
-    
-    // Act
-    let user = try await service.fetchUser(id: "valid-id")
-    
-    // Assert
-    XCTAssertEqual(user.id, "valid-id")
-    XCTAssertEqual(user.name, "Test User")
-}
-```
-
-### Performance Testing
-
-- Use measure() to evaluate performance of critical code paths
-- Set baseline performance expectations
-- Run performance tests on consistent hardware
-- Isolate performance tests from other factors
-
-```swift
-func test_sortLargeArray_performance() {
-    let largeArray = (0..<10000).map { _ in Int.random(in: 1...1000) }
-    
-    measure {
-        _ = largeArray.sorted()
-    }
-}
-```
-
-### Testing Core Data
-
-- Create a separate, in-memory persistent store for tests
-- Reset the store between tests
-- Test CRUD operations and data relationships
-- Use a test-specific NSPersistentContainer
-
-```swift
-class CoreDataTests: XCTestCase {
-    var container: NSPersistentContainer!
-    var context: NSManagedObjectContext!
-    
-    override func setUp() {
-        super.setUp()
-        
-        container = NSPersistentContainer(name: "YourAppModel")
-        let description = NSPersistentStoreDescription()
-        description.type = NSInMemoryStoreType
-        container.persistentStoreDescriptions = [description]
-        
-        container.loadPersistentStores { _, error in
-            XCTAssertNil(error)
-        }
-        
-        context = container.viewContext
-    }
-    
-    override func tearDown() {
-        context = nil
-        container = nil
-        super.tearDown()
-    }
-    
-    func test_saveUser_withValidData_persistsToStore() {
-        // Arrange
-        let user = User(context: context)
-        user.id = "123"
-        user.name = "Test User"
-        user.email = "test@example.com"
-        
-        // Act
-        try? context.save()
-        
-        // Assert
-        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-        let users = try? context.fetch(fetchRequest)
-        
-        XCTAssertEqual(users?.count, 1)
-        XCTAssertEqual(users?.first?.name, "Test User")
-    }
-}
-```
-
-## Using Third-Party Testing Frameworks
-
-### Quick and Nimble
-
-- Consider Quick for BDD-style tests
-- Use Nimble for more expressive assertions
-- Structure tests with describe/context/it blocks
-- Leverage beforeEach and afterEach for setup and teardown
-
-```swift
-class UserViewModelSpec: QuickSpec {
-    override func spec() {
-        describe("UserViewModel") {
-            var viewModel: UserViewModel!
-            var mockUserService: MockUserService!
-            
-            beforeEach {
-                mockUserService = MockUserService()
-                viewModel = UserViewModel(userService: mockUserService)
-            }
-            
-            context("when loading user data") {
-                context("and the network request succeeds") {
-                    beforeEach {
-                        mockUserService.userToReturn = User(id: "123", name: "Test User")
-                    }
-                    
-                    it("should update the user property") {
-                        viewModel.loadUser(id: "123")
-                        expect(viewModel.user?.name).toEventually(equal("Test User"))
-                    }
-                    
-                    it("should set isLoading to false") {
-                        viewModel.loadUser(id: "123")
-                        expect(viewModel.isLoading).toEventually(beFalse())
-                    }
-                }
-                
-                context("and the network request fails") {
-                    beforeEach {
-                        mockUserService.errorToReturn = NSError(domain: "test", code: 404, userInfo: nil)
-                    }
-                    
-                    it("should set the error property") {
-                        viewModel.loadUser(id: "123")
-                        expect(viewModel.error).toEventuallyNot(beNil())
-                    }
-                }
-            }
-        }
-    }
+    wait(for: [expectation], timeout: 1.0)
+    XCTAssertEqual(fetchedUser?.id, "123")
+    XCTAssertEqual(fetchedUser?.name, "Test User")
+    XCTAssertEqual(fetchedUser?.email, "test@example.com")
 }
 ```
 
@@ -392,10 +508,8 @@ class UserViewModelSpec: QuickSpec {
 
 ### File Organization
 
-- Group test files to mirror your app's structure
-- Separate unit, integration, and UI tests
-- Keep helper methods and utilities in a shared test utilities folder
-- Use consistent naming patterns for all test files
+- Group test files mirroring the app\'s structure (e.g., by feature).
+- Keep test files focused (SRP).
 
 ```
 YourApp/
@@ -425,10 +539,9 @@ YourApp/
 
 ## Testing Tips for SwiftUI
 
-- Test business logic in view models instead of views
-- Use ViewInspector for testing SwiftUI views if needed
-- Focus on testing the state changes that drive view updates
-- Use PreviewProvider configurations for visual testing during development
+- Test business logic primarily in **ViewModels** or other logic containers, keeping Views simple.
+- Use `ViewInspector` or similar tools cautiously for view structure testing if absolutely necessary.
+- Focus on testing state changes and their effects, aligning with the declarative nature of SwiftUI.
 
 ```swift
 // Testing a SwiftUI ViewModel
@@ -452,10 +565,8 @@ func test_toggleFavorite_updatesIsFavoriteProperty() {
 
 ## Testing Legacy Code
 
-- Focus on high-value areas first
-- Use the Humble Object pattern to separate logic from UI
-- Apply the Characterization Testing technique for undocumented behavior
-- Consider using approval tests for complex output validation
-- Refactor gradually to improve testability
+- Focus on high-value areas first. Add tests before refactoring.
+- Use the **Humble Object pattern** to separate testable logic from difficult-to-test UI or framework code.
+- Apply **Characterization Testing** (writing tests to document existing behavior) before refactoring undocumented code.
 
-Remember that good tests are investments in your codebase's long-term health. They provide confidence in refactoring, help document expected behavior, and catch regressions early. Write tests that are useful, maintainable, and reliable.
+Remember that good tests are investments in your codebase\'s long-term health and resilience. They provide confidence in refactoring, document expected behavior, enforce SOLID principles, and catch regressions early. Write tests that are useful, maintainable, reliable, and drive the development process (TDD).

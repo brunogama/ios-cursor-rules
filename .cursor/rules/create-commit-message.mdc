@@ -53,19 +53,19 @@ function generateCommitMessage(file, changeDescription) {
 **Input 1**:
 ```
 CHANGE_DESCRIPTION="add user authentication function"
-FILE="src/auth/login.ts"
+FILE="Source/Features/Auth/LoginAuth.swift"
 ```
 **Output 1**:
 ```
-feat(src-auth): add user authentication function
+feat(Source-Features-Auth): add user authentication function
 ```
 
 **Input 2**:
 ```
 CHANGE_DESCRIPTION="fix incorrect date parsing"
-FILE="lib/utils/date.js"
+FILE="Source/Core/Utilities/DateUtils.swift"
 ```
 **Output 2**:
 ```
-fix(lib-utils): fix incorrect date parsing
+fix(Source-Core-Utilities): fix incorrect date parsing
 ```
