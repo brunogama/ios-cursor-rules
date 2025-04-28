@@ -2,7 +2,8 @@
   <img src="https://github.com/brunogama/my-opinionated-ios-cursor-rules/blob/922547e5fbd27421c509129ccdff6693d1057b7e/image.png" alt="Banner"><br />
 </p>
 
-![GitHub last commit](https://img.shields.io/github/last-commit/brunogama/my-opinionated-ios-cursor-rules?display_timestamp=author&style=flat) <object width="300" height="200"><img alt="Static Badge" src="https://img.shields.io/badge/:badgeContent?logo=%235AC4EE&label=site&link=https%3A%2F%2Fbruno.foundation">
+![GitHub last commit](https://img.shields.io/github/last-commit/brunogama/my-opinionated-ios-cursor-rules?display_timestamp=author&style=flat)
+ <object width="300" height="200"><img alt="Static Badge" src="https://img.shields.io/badge/:badgeContent?logo=%235AC4EE&label=site&link=https%3A%2F%2Fbruno.foundation">
 </object>
 
 
