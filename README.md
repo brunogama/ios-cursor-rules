@@ -3,8 +3,8 @@
 </p>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/brunogama/my-opinionated-ios-cursor-rules?display_timestamp=author&style=flat) 
-![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fbruno.foundation%2F?style=for-the-badge&link=https%3A%2F%2Fbruno.foundation%2F)
 
+<img alt="Static Badge" src="https://img.shields.io/badge/bruno.foundation?style=for-the-badge&cacheSeconds=0&link=https%3A%2F%2Fbruno.foundation%2F&link=bruno.foundation">
 
 
 # Cursor Swift Rules
