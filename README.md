@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="https://github.com/brunogama/my-opinionated-ios-cursor-rules/blob/922547e5fbd27421c509129ccdff6693d1057b7e/image.png" alt="Banner">
+  <img src="https://github.com/brunogama/my-opinionated-ios-cursor-rules/blob/922547e5fbd27421c509129ccdff6693d1057b7e/image.png" alt="Banner"><br />
+  ![GitHub last commit](https://img.shields.io/github/last-commit/brunogama/my-opinionated-ios-cursor-rules?display_timestamp=author&style=flat)
+
 </p>
 
 # Cursor Swift Rules
