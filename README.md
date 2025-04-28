@@ -3,7 +3,7 @@
 </p>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/brunogama/my-opinionated-ios-cursor-rules?display_timestamp=author&style=flat)
- <object width="300" height="200"><img alt="Static Badge" src="https://img.shields.io/badge/:badgeContent?logo=%235AC4EE&label=site&link=https%3A%2F%2Fbruno.foundation">
+ <object data="https://img.shields.io/badge/:badgeContent?logo=%235AC4EE&label=site&link=https%3A%2F%2Fbruno.foundation" src="https://img.shields.io/badge/:badgeContent?logo=%235AC4EE&label=site&link=https%3A%2F%2Fbruno.foundation" width="300" height="200">
 </object>
 
 
