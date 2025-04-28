@@ -1,135 +1,214 @@
-<p align="center">
-  <img src="https://github.com/brunogama/my-opinionated-ios-cursor-rules/blob/922547e5fbd27421c509129ccdff6693d1057b7e/image.png" alt="Banner">
-</p>
+# Cursor Swift Rules
 
+A comprehensive collection of Cursor rules specifically designed for Swift and iOS development. These rules enhance your development experience by providing intelligent assistance for common iOS development tasks, testing, security, and best practices.
 
-# **Swift/iOS Cursor Rules**
+## 🚀 Quick Start
 
-An opinionated suite of [Cursor Rules](https://docs.cursor.com/context/rules-for-ai) specifically tailored for iOS and Swift development. These rules provide AI guidance for Swift programming, iOS app architecture, testing, and App Store deployment.
-
-> [!NOTE]  
-> Checkout [How Cursor Rules Work](how-cursor-rules-work.md) for an undocumented deep-dive on how Cursor uses them internally.
-
-## **How To Use These Rules**
-
-Run the following command in the root of your iOS project to install these rules:
+Install the rules using the provided installation script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/zackiles/cursor-config/main/install.sh | bash
+curl -o- https://raw.githubusercontent.com/yourusername/cursor-swift-rules/main/install.sh | bash
 ```
 
-That's it! The rules will be automatically detected by Cursor and the [documentation for the rules](CURSOR-RULES.md) will be written to your project root for reference. If you ever want to update the rules, simply run the install script again.
+Or download and run manually:
 
-## Available Rules
+```bash
+git clone https://github.com/yourusername/cursor-swift-rules.git
+cd cursor-swift-rules
+./install.sh
+```
 
-**These iOS-specific rules are available**:
+## 📱 iOS Development Rules
 
-- `with-swift`: Swift coding standards and best practices
-- `with-ios`: iOS development patterns and architecture
-- `create-tests-swift`: Swift and iOS testing best practices
-- `create-ios-release`: iOS app release and deployment workflows
-- `finalize`: Ensures the AI completes tasks fully and properly
-- `prepare`: Research and preparation for complex changes 
-- `propose`: Structured brainstorming without direct code changes
-- `recover`: Steps to recover from persistent errors
+### `with-swift.mdc`
+Enforces Swift coding standards and best practices:
+- Naming conventions (Swift API Design Guidelines)
+- Memory management patterns
+- Error handling best practices
+- Swift idioms and patterns
+- Protocol-oriented programming
+- Value vs Reference types usage
 
-> [!NOTE]  
-> For full documentation and examples for each rule, see [CURSOR-RULES.md](CURSOR-RULES.md).
-
-## Using iOS Rules
-
-### with-swift
-
-This rule activates when editing `.swift` files and provides detailed guidance on Swift coding standards, including:
-- Naming conventions and code organization
-- Swift idioms and best practices
-- Memory management guidelines
-- Error handling patterns
-- Usage of modern Swift features
-
-Add to your prompt: `@with-swift` or open any Swift file.
-
-### with-ios
-
-This rule covers iOS-specific development patterns and architectural considerations:
-- App architecture recommendations (MVC, MVVM, etc.)
-- UIKit vs SwiftUI guidance
-- iOS app lifecycle management
-- Device capabilities and constraints
+### `with-ios.mdc`
+iOS-specific development patterns and architectural guidance:
+- UIKit vs SwiftUI decision making
+- App lifecycle management
+- Device capabilities handling
 - Accessibility implementation
-- Data management strategies
+- iOS data management strategies
+- Memory warnings and state preservation
+- Background task handling
 
-Add to your prompt: `@with-ios` or open iOS project files.
-
-### create-tests-swift
-
-This rule provides in-depth guidance for testing iOS applications:
+### `create-tests-swift.mdc`
+Guidelines for creating effective Swift tests:
 - XCTest framework usage
-- Unit, UI, and integration testing
-- Mocking and stubbing in Swift
-- Testing asynchronous code
-- Core Data testing strategies
-- Quick/Nimble BDD testing
+- UI Testing best practices
+- Performance testing
+- Network request mocking
+- Asynchronous code testing
+- Test data management
+- Code coverage requirements
 
-Add to your prompt: `@create-tests-swift` or open test files.
-
-### create-ios-release
-
-This rule guides through the iOS app release process:
-- App Store submission workflow
-- Code signing and provisioning
+### `create-ios-release.mdc`
+Comprehensive guide for iOS app deployment:
+- App Store submission checklist
 - TestFlight distribution
-- CI/CD setup with Fastlane
-- App Store optimization
-- Post-release monitoring
+- Code signing management
+- Fastlane integration
+- CI/CD pipeline setup
+- Version and build number management
 
-Add to your prompt: `@create-ios-release` or open release configuration files.
+## 🛠 General Utility Rules
 
-## Swift Best Practices
+### `create-release.mdc`
+Handles iOS app release process:
+- Version bumping
+- Changelog management
+- Documentation updates
+- Git branching and tagging
+- Release notes generation
 
-Following Swift best practices is essential for writing maintainable, efficient code. As outlined by Kalidoss Shanmugam in "[Best vs. Worst Coding Practices in Swift](https://medium.com/@kalidoss.shanmugam/best-vs-worst-coding-practices-in-swift-20-key-examples-e70ca2c2a0f3)", pay attention to:
+### `finalize.mdc`
+Post-development cleanup and validation:
+- Dead code elimination
+- Documentation completeness
+- Resource optimization
+- Memory leak checking
+- Unused import removal
 
-1. **Consistent naming conventions**: Use clear, descriptive names following Swift's guidelines
-2. **Safe handling of optionals**: Avoid force unwrapping with `!` and use `if let` or `guard let` instead
-3. **Using `guard` statements** for early exits to improve code readability
-4. **Protocol-oriented programming**: Favor protocol composition over inheritance
-5. **Memory management**: Use `[weak self]` in closures to avoid retain cycles
-6. **Swift's modern features**: Embrace Swift idioms like map/filter/reduce
+## 🧪 Testing and Debugging Rules
 
-## Editing Rules
+### `create-tests-swift.mdc`
+Specialized for Swift test creation:
+- Unit test templates
+- Integration test patterns
+- UI test best practices
+- Performance test guidelines
+- Test data management
 
-Rules are written in [MDC Syntax](https://github.com/nuxt-modules/mdc) and can be edited in a regular text editor or within Cursor for an enhanced MDC editing experience. They're stored in `./cursor/rules/*.mdc`.
+### `with-tests.mdc`
+Test execution and analysis:
+- Test suite organization
+- Test running strategies
+- Coverage analysis
+- Performance benchmarking
+- Test report generation
 
-Read more on [Cursor's Documentation](https://docs.cursor.com/context/rules-for-ai) or check out community-contributed rules on the [cursor.directory](https://cursor.directory/).
+### `recover.mdc`
+Error recovery procedures:
+- Common Swift error patterns
+- Debugging strategies
+- Crash report analysis
+- Memory issue resolution
+- Network problem debugging
 
-## Manual vs Automatic Rules
+## 📋 Planning and Documentation Rules
 
-Rules in `.cursor/rules` will either:  
+### `prepare.mdc`
+Pre-development research and planning:
+- Architecture planning
+- Component design
+- API documentation
+- Resource estimation
+- Technical spike planning
 
-- **Have a glob specified** and run automatically when the glob is detected for a file in the context window
-- **Have no glob specified**, in which case the rule only runs when triggered manually using the [@ command](https://docs.cursor.com/context/@-symbols/basic)
+### `propose.mdc`
+Feature and solution proposal structure:
+- Requirements analysis
+- Technical approach
+- Implementation strategy
+- Risk assessment
+- Timeline estimation
 
-## Other Configurations
+### `create-prompt.mdc`
+AI prompt generation for iOS development:
+- Feature implementation prompts
+- Bug fix descriptions
+- Test case generation
+- Documentation requests
+- Code review guidelines
 
-### Cursor Global Prompt (Optional)
+## 🏗 Project Management Rules
 
-The file [CURSOR-GLOBAL-PROMPT.md](CURSOR-GLOBAL-PROMPT.md) can be copied directly into the `User Rules` box in `Cursor Settings -> Rules`. This acts as the global prompt applied to all interactions with the agent. It's optimized to work with the provided rules but is optional.
+### `command-rules.mdc`
+Custom command system for iOS projects:
+- Build commands
+- Test automation
+- Deployment scripts
+- Code generation
+- Resource management
 
-### .cursorignore & .cursorindexignore
+### `knowledge-management-rule.mdc`
+Project knowledge base management:
+- Swift best practices
+- iOS patterns
+- Common solutions
+- Learning resources
+- Team guidelines
 
-Example `.cursorignore` and `.cursorignoreindex` files are provided to control what files Cursor indexes or ignores. This prevents cluttering Cursor's context window with unnecessary files and avoids confusing the AI with outdated documentation.
+### `specification-management-rule.mdc`
+Requirements and specification handling:
+- Feature specifications
+- API documentation
+- UI/UX requirements
+- Performance criteria
+- Security requirements
 
-#### Differences
+### `visualization-rule.mdc`
+Project visualization tools:
+- Architecture diagrams
+- Workflow charts
+- UI flow diagrams
+- Data model visualization
+- Dependency graphs
 
-**.cursorignore:** For completely ignoring files in cursor. Things in `.gitignore` are already automatically ignored.
+## 🔄 Project Organization Rules
 
-**.cursorignoreindex:** For files you want available only when manually provided. These files are NOT indexed. Useful for large schema files or documentation you only want to reference explicitly.
+### `location-rule.mdc`
+File and directory organization:
+- Swift file organization
+- Resource management
+- Project structure
+- Module organization
+- Asset management
 
-## TODO
+### `on-load-rule.mdc`
+Project initialization and setup:
+- Environment configuration
+- Dependency setup
+- Initial checks
+- Project validation
+- Setup verification
 
-- Add sample Xcode project templates
-- Create SwiftUI-specific rule examples
-- Add common iOS design patterns documentation
-- Expand accessibility guidelines for iOS apps
-- Create AI docs for Swift using Cursor's `@doc` system. See [Cursor @Docs](https://docs.cursor.com/context/@-symbols/@-docs).
-# my-ios-opinionated-cursor-rules
+### `project-onboarding-rule.mdc`
+New developer onboarding:
+- Project setup guide
+- Development workflow
+- Tool configuration
+- Access management
+- Environment setup
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to submit pull requests, report issues, and contribute to the project.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- The Swift and iOS development community
+- Contributors to the Cursor project
+- Apple's Swift and iOS documentation
+
+## 📮 Support
+
+For support, please:
+1. Check the [documentation](.cursor/docs)
+2. Search [existing issues](https://github.com/yourusername/cursor-swift-rules/issues)
+3. Create a new issue if needed
+
+---
+
+Made with ❤️ for Swift and iOS developers
