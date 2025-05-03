@@ -48,6 +48,24 @@ iOS-specific development patterns and architectural guidance:
 - Memory warnings and state preservation
 - Background task handling
 
+### `with-ddd-swift.mdc`
+Domain-Driven Design principles adapted for Swift:
+- Strategic and tactical patterns for Swift
+- Entity and value object implementation
+- Aggregate design in Swift
+- Repository pattern implementation
+- Domain events in Swift applications
+
+### `clean-architecture-swift.mdc`
+Clean Architecture implementation in Swift:
+- Layer separation (Domain, Application, Interface, Infrastructure)
+- Dependency rule enforcement
+- Use case implementation
+- Interface adapters in Swift
+- Dependency injection techniques
+
+## 🧪 Testing and QA Rules
+
 ### `create-tests-swift.mdc`
 Guidelines for creating effective Swift tests:
 - XCTest framework usage
@@ -58,6 +76,25 @@ Guidelines for creating effective Swift tests:
 - Test data management
 - Code coverage requirements
 
+### `swift-testing-policy.mdc`
+Project-specific testing standards:
+- Test coverage requirements
+- Test naming conventions
+- Test organization guidelines
+- Mock object creation patterns
+- CI/CD test integration
+
+### `object-calisthenics-swift.mdc`
+Code quality improvement through constraints:
+- Single level of indentation
+- No else keyword usage
+- Encapsulated collections
+- Small entities
+- First-class collections
+- Implementation specific to Swift patterns
+
+## 📦 Release and Deployment Rules
+
 ### `create-ios-release.mdc`
 Comprehensive guide for iOS app deployment:
 - App Store submission checklist
@@ -67,8 +104,6 @@ Comprehensive guide for iOS app deployment:
 - CI/CD pipeline setup
 - Version and build number management
 
-## 🛠 General Utility Rules
-
 ### `create-release.mdc`
 Handles iOS app release process:
 - Version bumping
@@ -76,6 +111,16 @@ Handles iOS app release process:
 - Documentation updates
 - Git branching and tagging
 - Release notes generation
+
+### `create-commit-message.mdc`
+Standardized commit message formatting:
+- Conventional commits structure
+- Semantic versioning integration
+- Issue/ticket referencing
+- Co-author attribution
+- Changelog integration
+
+## 🔧 Development Workflow Rules
 
 ### `finalize.mdc`
 Post-development cleanup and validation:
@@ -85,23 +130,13 @@ Post-development cleanup and validation:
 - Memory leak checking
 - Unused import removal
 
-## 🧪 Testing and Debugging Rules
-
-### `create-tests-swift.mdc`
-Specialized for Swift test creation:
-- Unit test templates
-- Integration test patterns
-- UI test best practices
-- Performance test guidelines
-- Test data management
-
-### `with-tests.mdc`
-Test execution and analysis:
-- Test suite organization
-- Test running strategies
-- Coverage analysis
-- Performance benchmarking
-- Test report generation
+### `main-refactoring-rules.mdc`
+Code refactoring guidance:
+- Code smell detection
+- Refactoring techniques for Swift
+- Performance optimization patterns
+- Legacy code modernization
+- Swift idiom implementation
 
 ### `recover.mdc`
 Error recovery procedures:

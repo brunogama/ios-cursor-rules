@@ -3,7 +3,6 @@ description: Defines custom commands for AI-assisted development workflows
 globs: 
 alwaysApply: true
 ---
-
 # AI Command System
 
 Rule for defining and handling custom commands for AI-assisted development workflows.
@@ -85,6 +84,8 @@ actions:
       - Potential complex functions (>50 lines)
       - TODOs and FIXMEs
       - Potential architectural issues
+      - Refactor to follow [object callisthenics](mdc:https:/williamdurand.fr/2013/06/03/object-calisthenics)
+      - Check for code smells 
       
       The analysis report will be saved to `.cursor/output/code_analysis_[timestamp].md`
 
@@ -96,6 +97,7 @@ actions:
       # Pattern will capture the file path
       
       I'll analyze the specified file and provide refactoring recommendations:
+      - Look for @codes
       - Identify long functions that could be broken down
       - Find duplicated code patterns
       - Review naming conventions

@@ -1,423 +1,403 @@
----
-description: 
-globs: 
-alwaysApply: false
----
-# Swift Testing Guidelines
+# Swift Testing Guide
 
-Rule for creating effective Swift tests using XCTest and other iOS testing frameworks.
+This guide outlines Swift testing principles and practices, focusing on creating effective unit tests for Swift code.
 
 <rule>
-name: create_tests_swift
+name: swift_testing
 filters:
   - type: file_change
-    pattern: "*.swift"
-  - type: file_change
-    pattern: "*Tests/*.swift"
-  - type: file_change
-    pattern: "*UITests/*.swift"
+    pattern: "*Tests.swift"
   - type: command
-    pattern: "test"
+    pattern: "@swift-tests"
 
 actions:
-  - type: react
-    conditions:
-      - pattern: "create test|test create"
-    action: |
-      # Create a new test file
-      
-      I'll create a new test file following iOS testing best practices:
-      
-      1. Determine test type and location:
-         - Unit tests in [Target]Tests/
-         - UI tests in [Target]UITests/
-         - Integration tests in appropriate test target
-      
-      2. Structure the test file:
-         - Import XCTest and tested module
-         - Create test class inheriting from XCTestCase
-         - Add setup/teardown if needed
-         - Group related tests using MARK comments
-      
-      3. Follow naming conventions:
-         - Test class: [TestedClass]Tests
-         - Test methods: test_[scenario]_[expectedResult]
-         - Test files: [TestedClass]Tests.swift
-      
-      4. Include essential test components:
-         - Arrange (setup test data)
-         - Act (perform the test)
-         - Assert (verify results)
-      
-      5. Add test documentation:
-         - Test purpose and requirements
-         - Any special setup needed
-         - Expected outcomes
-      
-      This creates well-structured, maintainable tests.
-
-  - type: react
-    conditions:
-      - pattern: "test coverage|coverage test"
-    action: |
-      # Check test coverage
-      
-      I'll analyze test coverage using Xcode's coverage tools:
-      
-      1. Enable code coverage in scheme settings
-      2. Run test suite with coverage enabled
-      3. Generate coverage report
-      4. Identify areas needing more tests
-      5. Suggest specific test cases to add
-      
-      Coverage reports will be saved to test_output/coverage/
-
-  - type: react
-    conditions:
-      - pattern: "test performance|performance test"
-    action: |
-      # Create performance tests
-      
-      I'll create performance tests using XCTest's measure block:
-      
-      1. Identify critical paths to test
-      2. Set up baseline metrics
-      3. Create measure blocks
-      4. Add performance assertions
-      5. Document performance requirements
-      
-      This ensures critical code paths maintain expected performance.
-
-  - type: react
-    event: "file_change"
-    conditions:
-      - pattern: "*Tests/*.swift"
-      - pattern: "*UITests/*.swift"
-    action: |
-      # Validate test file quality
-      
-      When test files change, I'll verify:
-      
-      1. Test structure follows conventions
-      2. All test methods are properly named
-      3. Setup/teardown are appropriate
-      4. Assertions are meaningful
-      5. Documentation is complete
-      
-      This maintains high-quality tests.
-
   - type: suggest
     message: |
-      ### Swift Testing Guidelines
+      ## Swift Testing Guidelines
+      
+      In this project, every public function must have unit tests. We follow these guidelines:
 
-      I follow iOS testing best practices:
-
-      **Test Creation:**
-      - `test create "ClassToTest"` - Create new test file
-      - `test coverage` - Check test coverage
-      - `test performance` - Create performance tests
-
-      **Test Types:**
-      - Unit Tests (XCTest)
-      - UI Tests (XCUITest)
-      - Integration Tests
-      - Performance Tests
-
-      **Conventions:**
-      - Test class: [TestedClass]Tests : XCTestCase
-      - Test methods: test_[scenario]_[expectedResult]
-      - Files in appropriate test target
-      - Clear arrange-act-assert structure
-
-      **Automatic Behaviors:**
-      - When test files change → Validate structure
-      - When implementing features → Suggest test cases
-      - When coverage drops → Recommend new tests
-
-      This ensures comprehensive test coverage while maintaining
-      test quality and consistency.
+      ### Test Structure
+      
+      #### Naming Convention
+      
+      - Test class name: `[ClassUnderTest]Tests`
+      - Test method name: `test_[FunctionUnderTest]_[Scenario]_[ExpectedResult]`
+      
+      **Example:**
+      ```swift
+      class UserAuthenticationTests: XCTestCase {
+          func test_authenticate_withValidCredentials_shouldReturnToken() { ... }
+          func test_authenticate_withInvalidPassword_shouldThrowAuthError() { ... }
+      }
+      ```
+      
+      #### Arrangement
+      
+      Every test should follow the Arrange-Act-Assert (AAA) pattern:
+      
+      ```swift
+      func test_addItem_withValidProduct_shouldAddToCart() {
+          // Arrange
+          let cart = ShoppingCart(id: CartID())
+          let product = Product(id: ProductID(), name: "Test Product", price: Money(amount: 10, currency: .usd))
+          
+          // Act
+          try! cart.addItem(product: product, quantity: 1)
+          
+          // Assert
+          XCTAssertEqual(cart.items.count, 1)
+          XCTAssertEqual(cart.total()?.amount, 10)
+      }
+      ```
+      
+      ### Types of Tests
+      
+      #### 1. Unit Tests
+      
+      - Tests a single unit of code in isolation
+      - Uses mocks/stubs for dependencies
+      - Fast and reliable
+      - Located in target's matching test target (e.g., DomainTests for Domain code)
+      
+      ```swift
+      func test_placeOrder_withValidItems_shouldCreateOrderSuccessfully() {
+          // Arrange
+          let mockOrderRepository = MockOrderRepository()
+          let mockProductRepository = MockProductRepository()
+          let orderService = OrderService(
+              orderRepository: mockOrderRepository,
+              productRepository: mockProductRepository
+          )
+          
+          let items = [OrderItem(productID: ProductID(), quantity: 1, price: Money(amount: 10, currency: .usd))]
+          
+          // Act
+          let result = orderService.placeOrder(items: items, customerID: CustomerID())
+          
+          // Assert
+          XCTAssertTrue(result.isSuccess)
+          XCTAssertEqual(mockOrderRepository.savedOrders.count, 1)
+      }
+      ```
+      
+      #### 2. Integration Tests
+      
+      - Tests interaction between multiple components
+      - Typically involves real implementations rather than mocks
+      - Located in separate test targets
+      
+      ```swift
+      func test_orderFlow_endToEnd_shouldProcessOrderSuccessfully() {
+          // Tests the full order flow from cart to confirmation
+          // Uses real implementations for most components
+      }
+      ```
+      
+      ### Mocking Guidelines
+      
+      - Create mocks for protocols, not for concrete classes
+      - Use protocol-based dependencies to make testing easier
+      - Name mocks clearly with the `Mock` prefix
+      
+      ```swift
+      protocol OrderRepository {
+          func save(_ order: Order) throws
+          func findByID(_ id: OrderID) -> Order?
+      }
+      
+      class MockOrderRepository: OrderRepository {
+          var savedOrders: [Order] = []
+          var ordersToReturn: [OrderID: Order] = [:]
+          
+          func save(_ order: Order) throws {
+              savedOrders.append(order)
+          }
+          
+          func findByID(_ id: OrderID) -> Order? {
+              return ordersToReturn[id]
+          }
+      }
+      ```
+      
+      ### Testing Value Objects
+      
+      Test both valid and invalid initialization:
+      
+      ```swift
+      func test_emailInitialization_withValidEmail_shouldSucceed() {
+          // Arrange & Act
+          let email = Email(value: "user@example.com")
+          
+          // Assert
+          XCTAssertNotNil(email)
+          XCTAssertEqual(email?.value, "user@example.com")
+      }
+      
+      func test_emailInitialization_withInvalidEmail_shouldReturnNil() {
+          // Arrange & Act
+          let email = Email(value: "invalid-email")
+          
+          // Assert
+          XCTAssertNil(email)
+      }
+      ```
+      
+      ### Testing Entities & Aggregates
+      
+      Test business rules and invariants:
+      
+      ```swift
+      func test_order_cannotBeFinalized_whenEmpty() {
+          // Arrange
+          let order = Order(id: OrderID(), customerID: CustomerID())
+          
+          // Act
+          let result = order.finalize()
+          
+          // Assert
+          XCTAssertEqual(result, .failure(.emptyOrder))
+      }
+      ```
+      
+      ### Testing Use Cases
+      
+      Test input/output behavior and interactions:
+      
+      ```swift
+      func test_placeOrderUseCase_shouldCoordinateRepositories() {
+          // Arrange
+          let mockOrderRepository = MockOrderRepository()
+          let mockNotificationService = MockNotificationService()
+          
+          let useCase = PlaceOrderUseCase(
+              orderRepository: mockOrderRepository,
+              notificationService: mockNotificationService
+          )
+          
+          let input = PlaceOrderInput(items: [...], customerID: CustomerID())
+          
+          // Act
+          let output = useCase.execute(input: input)
+          
+          // Assert
+          XCTAssertTrue(output.isSuccess)
+          XCTAssertEqual(mockOrderRepository.savedOrders.count, 1)
+          XCTAssertEqual(mockNotificationService.sentNotifications.count, 1)
+      }
+      ```
+      
+      ### Test Coverage Requirements
+      
+      - Domain Layer: 100% coverage
+      - Application Layer: 100% coverage
+      - Interface Adapters Layer: 90%+ coverage
+      - Infrastructure Layer: Focus on critical paths
+      
+      ### Testing Asynchronous Code
+      
+      Use expectations for asynchronous testing:
+      
+      ```swift
+      func test_fetchUserProfile_shouldReturnUserData() {
+          // Arrange
+          let expectation = self.expectation(description: "Fetch user profile")
+          let userService = UserService(apiClient: realApiClient)
+          var fetchedUser: User?
+          
+          // Act
+          userService.fetchProfile(userID: UserID()) { result in
+              if case .success(let user) = result {
+                  fetchedUser = user
+              }
+              expectation.fulfill()
+          }
+          
+          // Assert
+          waitForExpectations(timeout: 1.0)
+          XCTAssertNotNil(fetchedUser)
+      }
+      ```
+      
+      ### Testing Error Conditions
+      
+      Always test error paths:
+      
+      ```swift
+      func test_transferMoney_withInsufficientFunds_shouldThrowError() {
+          // Arrange
+          let account = BankAccount(balance: Money(amount: 50, currency: .usd))
+          
+          // Act & Assert
+          XCTAssertThrowsError(try account.withdraw(Money(amount: 100, currency: .usd))) { error in
+              XCTAssertEqual(error as? BankAccountError, .insufficientFunds)
+          }
+      }
+      ```
+      
+      ### Continuous Testing
+      
+      - Tests run on every pull request
+      - All tests must pass before merging
+      - Code coverage is measured and tracked
+      - New code requires new tests
 
 examples:
   - input: |
-      test create "LoginViewController"
-    output: "Created LoginViewControllerTests.swift with unit test structure"
-
-  - input: |
-      test coverage
-    output: "Generated coverage report. Current coverage: 85%. Areas needing tests: UserAuthentication.swift"
+      How should I test this domain entity?
+      ```swift
+      struct Money: Equatable {
+          let amount: Decimal
+          let currency: Currency
+          
+          init?(amount: Decimal, currency: Currency) {
+              guard amount >= 0 else { return nil }
+              self.amount = amount
+              self.currency = currency
+          }
+          
+          func add(_ other: Money) -> Money? {
+              guard currency == other.currency else { return nil }
+              return Money(amount: amount + other.amount, currency: currency)
+          }
+          
+          func subtract(_ other: Money) -> Money? {
+              guard currency == other.currency else { return nil }
+              return Money(amount: amount - other.amount, currency: currency)
+          }
+      }
+      ```
+    output: |
+      Here's how you should test this Money value object:
+      
+      ```swift
+      class MoneyTests: XCTestCase {
+          
+          // MARK: - Initialization Tests
+          
+          func test_init_withPositiveAmount_shouldCreateInstance() {
+              // Arrange & Act
+              let money = Money(amount: 100, currency: .usd)
+              
+              // Assert
+              XCTAssertNotNil(money)
+              XCTAssertEqual(money?.amount, 100)
+              XCTAssertEqual(money?.currency, .usd)
+          }
+          
+          func test_init_withZeroAmount_shouldCreateInstance() {
+              // Arrange & Act
+              let money = Money(amount: 0, currency: .eur)
+              
+              // Assert
+              XCTAssertNotNil(money)
+              XCTAssertEqual(money?.amount, 0)
+              XCTAssertEqual(money?.currency, .eur)
+          }
+          
+          func test_init_withNegativeAmount_shouldReturnNil() {
+              // Arrange & Act
+              let money = Money(amount: -10, currency: .usd)
+              
+              // Assert
+              XCTAssertNil(money)
+          }
+          
+          // MARK: - Addition Tests
+          
+          func test_add_withSameCurrency_shouldReturnCorrectSum() {
+              // Arrange
+              let money1 = Money(amount: 100, currency: .usd)!
+              let money2 = Money(amount: 50, currency: .usd)!
+              
+              // Act
+              let result = money1.add(money2)
+              
+              // Assert
+              XCTAssertNotNil(result)
+              XCTAssertEqual(result?.amount, 150)
+              XCTAssertEqual(result?.currency, .usd)
+          }
+          
+          func test_add_withDifferentCurrency_shouldReturnNil() {
+              // Arrange
+              let money1 = Money(amount: 100, currency: .usd)!
+              let money2 = Money(amount: 50, currency: .eur)!
+              
+              // Act
+              let result = money1.add(money2)
+              
+              // Assert
+              XCTAssertNil(result)
+          }
+          
+          func test_add_withZeroAmount_shouldReturnSameAmount() {
+              // Arrange
+              let money1 = Money(amount: 100, currency: .usd)!
+              let money2 = Money(amount: 0, currency: .usd)!
+              
+              // Act
+              let result = money1.add(money2)
+              
+              // Assert
+              XCTAssertEqual(result?.amount, 100)
+          }
+          
+          // MARK: - Subtraction Tests
+          
+          func test_subtract_withSameCurrency_shouldReturnCorrectDifference() {
+              // Arrange
+              let money1 = Money(amount: 100, currency: .usd)!
+              let money2 = Money(amount: 30, currency: .usd)!
+              
+              // Act
+              let result = money1.subtract(money2)
+              
+              // Assert
+              XCTAssertNotNil(result)
+              XCTAssertEqual(result?.amount, 70)
+              XCTAssertEqual(result?.currency, .usd)
+          }
+          
+          func test_subtract_withDifferentCurrency_shouldReturnNil() {
+              // Arrange
+              let money1 = Money(amount: 100, currency: .usd)!
+              let money2 = Money(amount: 30, currency: .eur)!
+              
+              // Act
+              let result = money1.subtract(money2)
+              
+              // Assert
+              XCTAssertNil(result)
+          }
+          
+          func test_subtract_resultingInNegativeAmount_shouldStillSubtract() {
+              // Arrange
+              let money1 = Money(amount: 30, currency: .usd)!
+              let money2 = Money(amount: 50, currency: .usd)!
+              
+              // Act
+              let result = money1.subtract(money2)
+              
+              // Assert
+              XCTAssertNotNil(result)
+              XCTAssertEqual(result?.amount, -20)
+          }
+      }
+      ```
+      
+      Key aspects of this test approach:
+      
+      1. I've organized tests into logical sections (initialization, addition, subtraction)
+      2. I've tested all valid and invalid scenarios for each method
+      3. All tests follow the Arrange-Act-Assert pattern
+      4. Test names clearly describe the scenario and expected outcome
+      5. Edge cases are covered (zero values, negative results, currency mismatches)
+      6. We're testing that the Money type properly enforces its invariants
+      
+      This comprehensive test suite verifies all the behavior of the Money value object.
 
 metadata:
   priority: high
   version: 1.0
 </rule>
-
-# Swift Testing Best Practices for Test-Driven Development (TDD)
-
-As an AI assistant driving iOS development through testing, I MUST follow these guidelines to create effective, maintainable, and reliable tests, ensuring code quality and resilience. The primary goal is to practice TDD: **write tests *before* production code.**. Before adding code to the codebase I will create the unit tests abd connit thenm. After that I'll rationalize the task and will work in all the tests created.
-
-## General Testing Philosophy
-
-- **TDD First**: Write a failing test *before* writing the implementation code. ALL FLOW OFF WRITING THE TEST MUST FOLLOW RED GREEN REFACTOR.
-- **Test Behavior, Not Implementation**: Focus on *what* the code should do, not *how* it does it.
-- **SOLID Alignment**: Design tests to validate contracts defined by protocols and interfaces (Dependency Inversion).
-- **Single Responsibility Principle (SRP)**: Each test method should validate one specific aspect or behavior.
-- **Object Calisthenics**: Keep test methods small, focused, and avoid excessive setup. Aim for clarity.
-- **Keep Tests Simple, Fast, and Independent**: Avoid dependencies between tests.
-- **One Assertion Per Test**: Strive for one logical assertion per test method to pinpoint failures accurately (SRP).
-
-## XCTest Framework Basics
-
-### Unit Test Structure
-
-- Name test methods with format `test_<methodName>_<scenario>_<expectedResult>`
-- Use XCTAssert functions for assertions (XCTAssertEqual, XCTAssertTrue, etc.)
-- Organize tests in a logical, consistent manner
-- Use setUp() and tearDown() methods for common initialization and cleanup
-
-```swift
-class CartTests: XCTestCase {
-    // MARK: - Properties
-    private var cart: ShoppingCart!
-    private var mockPricingService: MockPricingService!
-    
-    // MARK: - Setup & Teardown
-    override func setUp() {
-        super.setUp()
-        mockPricingService = MockPricingService()
-        cart = ShoppingCart(pricingService: mockPricingService)
-    }
-    
-    override func tearDown() {
-        cart = nil
-        mockPricingService = nil
-        super.tearDown()
-    }
-    
-    // MARK: - Tests
-    func test_addItem_withValidProduct_increasesItemCount() {
-        // Arrange
-        let initialCount = cart.itemCount
-        let product = Product(id: "test", name: "Test Product", price: 10.0)
-        
-        // Act
-        cart.add(product: product)
-        
-        // Assert
-        XCTAssertEqual(cart.itemCount, initialCount + 1, "Adding a product should increase item count by 1")
-    }
-    
-    func test_calculateTotal_withTaxRate_returnsSumPlusTax() {
-        // Arrange
-        let product1 = Product(id: "p1", name: "Product 1", price: 10.0)
-        let product2 = Product(id: "p2", name: "Product 2", price: 15.0)
-        cart.add(product: product1)
-        cart.add(product: product2)
-        
-        // Act
-        let total = cart.calculateTotal(withTaxRate: 0.1)
-        
-        // Assert
-        XCTAssertEqual(total, 27.5, "Total should be sum plus tax: (10 + 15) * 1.1 = 27.5")
-    }
-}
-```
-
-### UI Tests
-
-- Use XCUITest for automated UI testing.
-- Tests MUST follow the **Page Object Model (POM)** pattern for maintainability. Structure UI tests by screen or logical flow.
-- Test critical user flows, not every minor interaction.
-
-```swift
-class LoginUITests: XCTestCase {
-    let app = XCUIApplication()
-    
-    override func setUp() {
-        super.setUp()
-        continueAfterFailure = false
-        app.launch()
-    }
-    
-    func test_login_withValidCredentials_showsHomeScreen() {
-        // Enter credentials
-        let emailTextField = app.textFields["emailTextField"]
-        let passwordTextField = app.secureTextFields["passwordTextField"]
-        let loginButton = app.buttons["loginButton"]
-        
-        emailTextField.tap()
-        emailTextField.typeText("test@example.com")
-        
-        passwordTextField.tap()
-        passwordTextField.typeText("password123")
-        
-        loginButton.tap()
-        
-        // Verify home screen appeared
-        let homeTitle = app.staticTexts["homeTitle"]
-        XCTAssertTrue(homeTitle.waitForExistence(timeout: 2.0), "Home screen should appear after successful login")
-    }
-}
-```
-
-## Mocking and Stubbing
-
-### Creating Test Doubles
-
-- Create mocks/stubs for dependencies to isolate the System Under Test (SUT).
-- **Use protocols** (Dependency Inversion) to define interfaces, making mocking easier and promoting loose coupling (SOLID).
-
-```swift
-// Protocol that enables mocking
-protocol NetworkService {
-    func fetchData(from url: URL, completion: @escaping (Result<Data, Error>) -> Void)
-}
-
-// Mock implementation for testing
-class MockNetworkService: NetworkService {
-    var dataToReturn: Data?
-    var errorToReturn: Error?
-    var capturedURL: URL?
-    
-    func fetchData(from url: URL, completion: @escaping (Result<Data, Error>) -> Void) {
-        capturedURL = url
-        
-        if let error = errorToReturn {
-            completion(.failure(error))
-        } else if let data = dataToReturn {
-            completion(.success(data))
-        }
-    }
-}
-
-// Using the mock in tests
-func test_fetchUserProfile_withSuccess_returnsUserObject() {
-    // Arrange
-    let mockService = MockNetworkService()
-    let userJSON = """
-    {"id": "123", "name": "Test User", "email": "test@example.com"}
-    """.data(using: .utf8)!
-    
-    mockService.dataToReturn = userJSON
-    let userRepository = UserRepository(networkService: mockService)
-    
-    let expectation = XCTestExpectation(description: "Fetch user profile")
-    var fetchedUser: User?
-    
-    // Act
-    userRepository.fetchUser(id: "123") { result in
-        if case .success(let user) = result {
-            fetchedUser = user
-        }
-        expectation.fulfill()
-    }
-    
-    // Assert
-    wait(for: [expectation], timeout: 1.0)
-    XCTAssertEqual(fetchedUser?.id, "123")
-    XCTAssertEqual(fetchedUser?.name, "Test User")
-    XCTAssertEqual(fetchedUser?.email, "test@example.com")
-}
-```
-
-### Dependency Injection
-
-- Design classes to accept dependencies via **initializer injection** (preferred) or property injection. This is crucial for testability and follows SOLID principles.
-- Use protocol types rather than concrete implementations for dependencies.
-
-```swift
-// Using the mock in tests
-func test_fetchUserProfile_withSuccess_returnsUserObject() {
-    // Arrange
-    let mockService = MockNetworkService()
-    let userJSON = """
-    {"id": "123", "name": "Test User", "email": "test@example.com"}
-    """.data(using: .utf8)!
-    
-    mockService.dataToReturn = userJSON
-    let userRepository = UserRepository(networkService: mockService)
-    
-    let expectation = XCTestExpectation(description: "Fetch user profile")
-    var fetchedUser: User?
-    
-    // Act
-    userRepository.fetchUser(id: "123") { result in
-        if case .success(let user) = result {
-            fetchedUser = user
-        }
-        expectation.fulfill()
-    }
-    
-    // Assert
-    wait(for: [expectation], timeout: 1.0)
-    XCTAssertEqual(fetchedUser?.id, "123")
-    XCTAssertEqual(fetchedUser?.name, "Test User")
-    XCTAssertEqual(fetchedUser?.email, "test@example.com")
-}
-```
-
-## Test Organization and Structure
-
-### File Organization
-
-- Group test files mirroring the app\'s structure (e.g., by feature).
-- Keep test files focused (SRP).
-
-```
-YourApp/
-└── Tests/
-    ├── UnitTests/
-    │   ├── Models/
-    │   ├── ViewModels/
-    │   └── Services/
-    ├── IntegrationTests/
-    │   ├── Networking/
-    │   └── Persistence/
-    ├── UITests/
-    │   ├── Flows/
-    │   └── Screens/
-    └── TestUtilities/
-        ├── Mocks/
-        ├── Factories/
-        └── Extensions/
-```
-
-### Continuous Integration
-
-- Configure test schemes for different test types
-- Set up CI to run tests on each PR and after merges
-- Track test coverage (using tools like Slather or Codecov)
-- Make test failures visible and actionable for the team
-
-## Testing Tips for SwiftUI
-
-- Test business logic primarily in **ViewModels** or other logic containers, keeping Views simple.
-- Use `ViewInspector` or similar tools cautiously for view structure testing if absolutely necessary.
-- Focus on testing state changes and their effects, aligning with the declarative nature of SwiftUI.
-
-```swift
-// Testing a SwiftUI ViewModel
-func test_toggleFavorite_updatesIsFavoriteProperty() {
-    // Arrange
-    let viewModel = ProductViewModel(product: testProduct)
-    
-    // Act
-    viewModel.toggleFavorite()
-    
-    // Assert
-    XCTAssertTrue(viewModel.isFavorite)
-    
-    // Act again
-    viewModel.toggleFavorite()
-    
-    // Assert again
-    XCTAssertFalse(viewModel.isFavorite)
-}
-```
-
-## Testing Legacy Code
-
-- Focus on high-value areas first. Add tests before refactoring.
-- Use the **Humble Object pattern** to separate testable logic from difficult-to-test UI or framework code.
-- Apply **Characterization Testing** (writing tests to document existing behavior) before refactoring undocumented code.
-
-Remember that good tests are investments in your codebase\'s long-term health and resilience. They provide confidence in refactoring, document expected behavior, enforce SOLID principles, and catch regressions early. Write tests that are useful, maintainable, reliable, and drive the development process (TDD).

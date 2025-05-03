@@ -1,103 +1,148 @@
----
-description: MUST READ AT START - Critical Development Principles
-globs: on_start
-alwaysApply: false
----
-# Critical Development Principles
+# Swift Project Development Guidelines
 
-Rule for establishing non-negotiable development principles that must be followed at all times.
+This guide outlines the critical development principles for this Swift project.
 
 <rule>
-name: critical_development_principles
+name: on_load_rule
 filters:
-  - type: event
-    pattern: "load"
-  - type: event
-    pattern: "start"
   - type: event
     pattern: "cursor_start"
   - type: command
-    pattern: "help"
+    pattern: "@principles"
 
 actions:
-  - type: react
-    event: "load"
-    priority: critical
-    action: |
-      # Non-negotiable development principles
-      
-      I MUST follow these principles for ALL development activities:
-      
-      1. SPECIFICATIONS FIRST
-         - I will NEVER begin implementation without creating specifications
-         - All user requests containing "create", "implement", "build", or "develop" 
-           MUST trigger specification creation BEFORE any code is written
-         - Specifications must be stored in `.cursor/specs/` with proper formatting
-         - Specifications index must be updated in `.cursor/SPECS.md`
-         - This is managed by the specification_management rule
-      
-      2. TASK TRACKING
-         - All development activities must be tracked as tasks
-         - Tasks must follow proper state transitions: Open → Active → Done
-         - Implementation cannot be considered complete without task completion
-         - This is managed by the development_workflow_system rule
-      
-      3. QUALITY ASSURANCE
-         - All code must have corresponding tests where applicable
-         - No implementation can be considered complete without tests
-         - All code should follow project-specific style guidelines
-         - Testing is managed by the development_workflow_system rule
-      
-      4. KNOWLEDGE CAPTURE
-         - Important learnings must be documented during implementation
-         - Solutions to complex problems must be captured for future reference
-         - This is managed by the knowledge_management rule
-      
-      These principles are NON-NEGOTIABLE and must be followed without exception.
-      Failure to follow these principles is considered a critical error.
-
-  - type: react
-    event: "cursor_start"
-    priority: critical
-    action: |
-      # Initialization check for development principles
-      
-      I will verify:
-      
-      1. Specifications directory exists (.cursor/specs/) - managed by specification_management rule
-      2. Task tracking is properly configured (.cursor/tasks/) - managed by development_workflow_system rule
-      3. Knowledge capture system is ready (.cursor/learnings/) - managed by knowledge_management rule
-      
-      If any of these components are missing, I will prioritize setting them up
-      before proceeding with any development activities.
-      
-      I will also remind myself that SPECIFICATIONS MUST COME BEFORE IMPLEMENTATION
-      for any request involving creation or development of new features.
-
   - type: suggest
     message: |
-      ### Critical Development Principles
+      # Critical Development Principles
       
-      As your AI assistant, I'm following these critical principles:
+      This Swift project follows strict architectural and code quality guidelines:
+
+      ## 1. Architecture
       
-      1. **Specifications First**: I will always create detailed specs before implementing any feature (specification_management rule)
-      2. **Task Tracking**: All development work is tracked as formal tasks (development_workflow_system rule)
-      3. **Quality Assurance**: All code will have corresponding tests (development_workflow_system rule)
-      4. **Knowledge Capture**: Important learnings will be documented (knowledge_management rule)
+      We follow **Clean Architecture** with:
+      - **Domain Layer**: Pure business logic, no frameworks
+      - **Application Layer**: Use cases orchestrating domain entities
+      - **Interface Adapters Layer**: Bridges between domain and external systems
+      - **Infrastructure Layer**: Frameworks, drivers, and UI
       
-      These principles ensure high-quality, well-documented, and traceable development.
-      I will follow this workflow for all implementation requests.
+      **Key principle**: Dependencies point inward. Outer layers depend on inner layers, never the reverse.
+
+      ## 2. Domain-Driven Design
+      
+      All domain modeling must use DDD tactical patterns:
+      - **Entities**: Objects with identity (User, Order)
+      - **Value Objects**: Immutable objects defined by their attributes (Email, Money)
+      - **Aggregates**: Consistency boundaries with a single entry point (OrderAggregate)
+      - **Domain Events**: Record important business events (OrderPlaced, PaymentReceived)
+      - **Repositories**: Data access abstractions for aggregates
+      
+      **Bounded Contexts** define boundaries between different domain areas.
+
+      ## 3. Object Callisthenics
+      
+      Strictly follow these 9 rules:
+      1. One level of indentation per method
+      2. Don't use the ELSE keyword
+      3. Wrap all primitives and strings
+      4. Use first-class collections
+      5. One dot per line (no method chaining)
+      6. Don't abbreviate names
+      7. Keep entities small (50 lines per class, 10 files per package)
+      8. No classes with more than 2 instance variables
+      9. No getters/setters/properties (focus on behavior)
+
+      ## 4. Testing Principles
+      
+      **Every public function must have unit tests.**
+      
+      Test coverage requirements:
+      - Domain Layer: 100%
+      - Application Layer: 100%
+      - Interface Adapters: 90%+
+      - Infrastructure: Critical paths
+      
+      Always follow AAA pattern (Arrange-Act-Assert).
+
+      ## 5. Package Structure
+      
+      Packages are organized by layer first, then by bounded context:
+      
+      ```
+      Sources/
+      ├── Domain/
+      │   ├── [BoundedContext1]/
+      │   ├── [BoundedContext2]/
+      ├── Application/
+      │   ├── [BoundedContext1]/
+      │   ├── [BoundedContext2]/
+      ├── InterfaceAdapters/
+      │   ├── [BoundedContext1]/
+      │   ├── [BoundedContext2]/
+      └── Infrastructure/
+          ├── [BoundedContext1]/
+          ├── [BoundedContext2]/
+      ```
+      
+      ## 6. Naming Conventions
+      
+      - Domain classes: Business terms (User, Order, Product)
+      - Use cases: VerbNoun format (CreateOrderUseCase, AuthenticateUserUseCase)
+      - Protocols: Nouns or adjectives (UserRepository, Authenticatable)
+      - Extensions: Extended type + feature (String+Validation)
+      
+      ## 7. Error Handling
+      
+      - Domain errors should be typed, not strings (enum OrderError)
+      - Use Swift's Result type for operations that can fail
+      - Fail early and explicitly
+      - Prefer throwing specific errors over optionals for failure cases
+      
+      ## 8. Dependency Injection
+      
+      - Dependencies must be explicit through constructor injection
+      - Use protocols to define dependencies, not concrete classes
+      - Do not use service locators or global singletons
+      
+      ## 9. Documentation Requirements
+      
+      - Domain models: Full documentation with business purpose
+      - Use cases: Documentation with inputs, outputs, and errors
+      - Public APIs: Fully documented with examples
+      - Tests: Clear arrange-act-assert sections
+
+      ## 10. Code Review Checklist
+      
+      - Follows Clean Architecture dependencies
+      - Adheres to DDD principles
+      - Satisfies Object Callisthenics rules
+      - Has required test coverage
+      - Properly documented
+      - No code smells
 
 examples:
   - input: |
-      Help me create a new feature
-    output: "Before implementing this feature, I'll create detailed specifications for it."
-
-  - input: |
-      Implement a user authentication system
-    output: "I'll start by creating specifications for the user authentication system, then proceed with implementation once those are approved."
+      I need to implement user authentication
+    output: |
+      I'll help you implement user authentication following our project principles:
+      
+      Let's approach this using Clean Architecture, DDD, and Object Callisthenics:
+      
+      1. First, I'll create domain entities and value objects in the Domain layer:
+         - A `User` entity with identity
+         - `Email` and `Password` as value objects with validation
+         - `AuthenticationError` enum for domain errors
+      
+      2. Next, I'll create use cases in the Application layer:
+         - `AuthenticateUserUseCase` with clear input/output boundaries
+         - `RegisterUserUseCase` for user registration
+      
+      3. Then I'll create repository interfaces and presenters in the Interface Adapters layer
+      
+      4. Finally, I'll implement concrete adapters in the Infrastructure layer
+      
+      All public functions will have unit tests, and I'll follow Object Callisthenics strictly (small methods, no else statements, etc.).
 
 metadata:
   priority: critical
   version: 1.0
-</rule> 
+</rule>
