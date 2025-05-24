@@ -12,11 +12,11 @@ check_dependencies() {
     if ! command_exists curl; then
         missing_deps+=("curl")
     fi
-    
+
     if ! command_exists xcodebuild; then
         missing_deps+=("Xcode Command Line Tools")
     fi
-    
+
     if ! command_exists swift; then
         missing_deps+=("Swift")
     fi
@@ -51,8 +51,8 @@ validate_xcode() {
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-# GitHub raw content base URL (update this to your Swift rules repo)
-REPO_URL="https://raw.githubusercontent.com/yourusername/cursor-swift-rules/main"
+# GitHub raw content base URL
+REPO_URL="https://raw.githubusercontent.com/brunogama/ios-cursor-rules/main"
 
 # Run initial checks
 echo "Checking dependencies..."
@@ -79,7 +79,7 @@ done
 download_rule() {
     local file="$1"
     local target_path=".cursor/rules/$file"
-    
+
     if [ ! -f "$target_path" ]; then
         echo "Downloading $file..."
         curl -s "$REPO_URL/.cursor/rules/$file" -o "$TMP_DIR/$file"
@@ -148,4 +148,4 @@ mkdir -p .cursor/{specs,tasks,learnings,docs,output}
 echo
 echo "Installation completed successfully!"
 echo "You can now use Cursor with Swift/iOS specific rules."
-echo "See CURSOR-RULES.md for available commands and usage." 
+echo "See CURSOR-RULES.md for available commands and usage."

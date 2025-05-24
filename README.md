@@ -16,14 +16,14 @@ A comprehensive collection of Cursor rules specifically designed for Swift and i
 Install the rules using the provided installation script:
 
 ```bash
-curl -o- https://raw.githubusercontent.com/yourusername/cursor-swift-rules/main/install.sh | bash
+curl -o- https://raw.githubusercontent.com/brunogama/ios-cursor-rules/main/install.sh | bash
 ```
 
 Or download and run manually:
 
 ```bash
-git clone https://github.com/yourusername/cursor-swift-rules.git
-cd cursor-swift-rules
+git clone https://github.com/brunogama/ios-cursor-rules.git
+cd ios-cursor-rules
 ./install.sh
 ```
 
@@ -250,7 +250,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support, please:
 1. Check the [documentation](.cursor/docs)
-2. Search [existing issues](https://github.com/yourusername/cursor-swift-rules/issues)
+2. Search [existing issues](https://github.com/brunogama/ios-cursor-rules/issues)
 3. Create a new issue if needed
 
 ---

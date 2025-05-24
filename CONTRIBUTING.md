@@ -19,7 +19,7 @@ We are committed to providing a welcoming and inclusive experience for everyone.
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/cursor-swift-rules.git
+   git clone https://github.com/YOUR_USERNAME/ios-cursor-rules.git
    ```
 3. Create a new branch:
    ```bash
@@ -126,4 +126,4 @@ If you have questions about contributing, please:
 2. Create a new issue with the `question` label
 3. Join our community discussions
 
-Thank you for contributing to Cursor Swift Rules! 
+Thank you for contributing to Cursor Swift Rules!
